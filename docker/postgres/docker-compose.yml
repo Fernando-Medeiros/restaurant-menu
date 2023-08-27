@@ -1,26 +1,26 @@
 version: '3.7'
 
 services:
-  postgres:
-    container_name: restaurant-postgres
-    image: docker.io/postgres:latest
-    restart: always
-    ports:
-      - '5432:5432'
-    volumes:
-      - 'postgresql_data:/postgresql/data'
-    environment:
-      - POSTGRES_USER=root
-      - POSTGRES_DB=Restaurant
-      - POSTGRES_PASSWORD=12345
-      - ALLOW_EMPTY_PASSWORD=no
-    networks:
-      - restaurant
+    postgres:
+        container_name: restaurant-postgres
+        image: docker.io/postgres:latest
+        restart: always
+        ports:
+            - '5432:5432'
+        volumes:
+            - 'postgresql_data:/postgresql/data'
+        environment:
+            - POSTGRES_USER=root
+            - POSTGRES_DB=Restaurant
+            - POSTGRES_PASSWORD=12345
+            - ALLOW_EMPTY_PASSWORD=no
+        networks:
+            - restaurant
 
 volumes:
-  postgresql_data:
-    driver: local
+    postgresql_data:
+        driver: local
 
 networks:
-  restaurant:
-    driver: bridge
+    restaurant:
+        driver: bridge

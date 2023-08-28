@@ -1,26 +1,42 @@
-import { IsEnum, IsOptional, IsString, Max, Min } from 'class-validator';
+import { IsEnum, IsOptional, Length } from 'class-validator';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { OrderBy } from '../Enum/orderby';
 import { SortBy } from '../Enum/sortby';
 
 export class ProductQueryDTO {
-    @IsString()
+    @ApiPropertyOptional({
+        description: 'Take',
+        default: 10,
+        maximum: 99,
+        minimum: 1,
+    })
     @IsOptional()
-    @Min(1)
-    @Max(100)
-    take?: number = 10;
+    @Length(0, 2)
+    take?: string = '10';
 
-    @IsString()
+    @ApiPropertyOptional({
+        description: 'Skip',
+        default: 10,
+        maximum: 99,
+        minimum: 0,
+    })
     @IsOptional()
-    @Min(0)
-    skip?: number = 0;
+    @Length(0, 2)
+    skip?: string = '0';
 
-    @IsString()
-    @IsOptional()
+    @ApiPropertyOptional({
+        description: 'Order By',
+        default: 'asc',
+        enum: OrderBy,
+    })
     @IsEnum(OrderBy)
     order?: OrderBy = OrderBy.asc;
 
-    @IsString()
-    @IsOptional()
+    @ApiPropertyOptional({
+        description: 'Sort By Columns',
+        default: 'name',
+        enum: SortBy,
+    })
     @IsEnum(SortBy)
-    sort?: SortBy = SortBy.name;
+    sort?: string = SortBy.name;
 }

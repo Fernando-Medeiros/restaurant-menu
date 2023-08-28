@@ -10,10 +10,10 @@ import {
     Param,
     Query,
 } from '@nestjs/common';
-import { ProductCreateRequest } from 'src/Modules/Category/Requests/category.createRequest';
+import { ProductCreateDTO } from 'src/Modules/Product/DTOs/product.createDTO';
 import { ProductParamDTO } from 'src/Modules/Product/DTOs/product.paramDTO';
 import { ProductQueryDTO } from 'src/Modules/Product/DTOs/product.queryDTO';
-import { ProductUpdateRequest } from 'src/Modules/Product/Requests/product.updateRequest';
+import { ProductUpdateDTO } from 'src/Modules/Product/DTOs/product.updateDTO';
 import { ProductService } from 'src/Modules/Product/product.service';
 
 @Controller('products')
@@ -32,7 +32,7 @@ export class ProductController {
 
     @Post()
     @HttpCode(201)
-    async register(@Body() body: ProductCreateRequest) {
+    async register(@Body() body: ProductCreateDTO) {
         throw new NotImplementedException('');
     }
 
@@ -40,7 +40,7 @@ export class ProductController {
     @HttpCode(204)
     async update(
         @Param('token') token: string,
-        @Body() body: ProductUpdateRequest,
+        @Body() body: ProductUpdateDTO,
     ) {
         throw new NotImplementedException('');
     }

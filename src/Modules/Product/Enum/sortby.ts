@@ -1,6 +1,6 @@
 export enum SortBy {
-    'token',
-    'name',
-    'price',
-    'createdAt',
+    'token' = 'token',
+    'name' = 'name',
+    'price' = 'price',
+    'createdAt' = 'createdAt',
 }

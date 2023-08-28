@@ -1,1 +1,21 @@
-export class ProductQueryDTO {}
+import { IsEnum, IsOptional, IsString, Max, Min } from 'class-validator';
+import { OrderBy } from '../Enum/orderby';
+import { SortBy } from '../Enum/sortby';
+
+export class ProductQueryDTO {
+    @IsString()
+    @IsOptional()
+    @Min(1)
+    @Max(50)
+    limit?: string = '10';
+
+    @IsString()
+    @IsOptional()
+    @IsEnum(OrderBy)
+    order?: OrderBy = OrderBy.asc;
+
+    @IsString()
+    @IsOptional()
+    @IsEnum(SortBy)
+    sort?: SortBy = SortBy.name;
+}

@@ -10,11 +10,11 @@ import {
     Post,
     Query,
 } from '@nestjs/common';
+import { CategoryCreateDTO } from 'src/Modules/Category/DTOs/category.createDTO';
 import { CategoryParamDTO } from 'src/Modules/Category/DTOs/category.paramDTO';
 import { CategoryQueryDTO } from 'src/Modules/Category/DTOs/category.queryDTO';
-import { CategoryUpdateRequest } from 'src/Modules/Category/Requests/category.updateRequest';
+import { CategoryUpdateDTO } from 'src/Modules/Category/DTOs/category.updateDTO';
 import { CategoryService } from 'src/Modules/Category/category.service';
-import { CategoryCreateRequest } from 'src/Modules/Product/Requests/product.createRequest';
 
 @Controller('categories')
 export class CategoryController {
@@ -37,7 +37,7 @@ export class CategoryController {
 
     @Post()
     @HttpCode(201)
-    async register(@Body() body: CategoryCreateRequest) {
+    async register(@Body() body: CategoryCreateDTO) {
         throw new NotImplementedException('');
     }
 
@@ -45,7 +45,7 @@ export class CategoryController {
     @HttpCode(204)
     async update(
         @Param('token') token: string,
-        @Body() body: CategoryUpdateRequest,
+        @Body() body: CategoryUpdateDTO,
     ) {
         throw new NotImplementedException('');
     }

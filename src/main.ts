@@ -1,11 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { ValidationPipe } from '@nestjs/common';
+import { SwaggerConfig } from './ModulesHelpers/Swagger/swagger.config';
 import { BadRequestInterceptor } from 'interceptors/badrequest.interceptor';
 import { NotFoundInterceptor } from 'interceptors/notfound.interceptor';
-import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
+
+    new SwaggerConfig(app).setup();
 
     app.useGlobalPipes(
         new ValidationPipe({

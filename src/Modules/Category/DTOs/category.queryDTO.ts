@@ -11,6 +11,11 @@ export class CategoryQueryDTO {
 
     @IsString()
     @IsOptional()
+    @Min(0)
+    skip?: number = 0;
+
+    @IsString()
+    @IsOptional()
     @IsEnum(OrderBy)
     order?: OrderBy = OrderBy.asc;
 

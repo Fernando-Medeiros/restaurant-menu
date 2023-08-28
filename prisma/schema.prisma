@@ -1,0 +1,52 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "mongodb"
+    url      = env("DATABASE_URL")
+}
+
+model Product {
+    token       String     @id @default(auto()) @map("_id") @db.ObjectId
+    name        String     @unique
+    price       Float
+    imageUrl    String
+    description String
+    createdAt   DateTime   @default(now())
+    updatedAt   DateTime   @updatedAt
+    menu        Menu[]
+    categories  Category[]
+
+    @@map("product")
+}
+
+model Category {
+    token        String   @id @default(auto()) @map("_id") @db.ObjectId
+    name         String   @unique
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
+    productToken String?  @db.ObjectId
+    product      Product? @relation(fields: [productToken], references: [token])
+
+    @@map("category")
+}
+
+model Menu {
+    token        String   @id @default(auto()) @map("_id") @db.ObjectId
+    productToken String   @db.ObjectId
+    period       Period
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
+    product      Product  @relation(fields: [productToken], references: [token])
+
+    @@map("menu")
+}
+
+enum Period {
+    Nighttime
+    Daytime
+}

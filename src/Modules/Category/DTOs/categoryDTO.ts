@@ -5,5 +5,5 @@ export class CategoryDTO implements Category {
     name: string;
     createdAt: Date;
     updatedAt: Date;
-    productToken: string | null;
+    productsIDs: string[];
 }

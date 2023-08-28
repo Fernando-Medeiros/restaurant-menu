@@ -6,8 +6,8 @@ export class CategoryQueryDTO {
     @IsString()
     @IsOptional()
     @Min(1)
-    @Max(50)
-    limit?: string = '10';
+    @Max(100)
+    take?: number = 10;
 
     @IsString()
     @IsOptional()

@@ -8,4 +8,5 @@ export class ProductDTO implements Product {
     description: string;
     createdAt: Date;
     updatedAt: Date;
+    categoriesIDs: string[];
 }

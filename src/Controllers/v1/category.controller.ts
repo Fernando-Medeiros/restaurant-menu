@@ -10,12 +10,14 @@ import {
     Post,
     Query,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { CategoryCreateDTO } from 'src/Modules/Category/DTOs/category.createDTO';
 import { CategoryParamDTO } from 'src/Modules/Category/DTOs/category.paramDTO';
 import { CategoryQueryDTO } from 'src/Modules/Category/DTOs/category.queryDTO';
 import { CategoryUpdateDTO } from 'src/Modules/Category/DTOs/category.updateDTO';
 import { CategoryService } from 'src/Modules/Category/category.service';
 
+@ApiTags('Category Controller')
 @Controller('categories')
 export class CategoryController {
     constructor(private readonly _service: CategoryService) {}

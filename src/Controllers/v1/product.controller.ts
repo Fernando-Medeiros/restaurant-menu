@@ -18,12 +18,14 @@ import {
     ApiOperation,
     ApiTags,
 } from '@nestjs/swagger';
-import { ProductCreateDTO } from 'modules/Product/DTOs/product.createDTO';
-import { ProductParamDTO } from 'modules/Product/DTOs/product.paramDTO';
-import { ProductQueryDTO } from 'modules/Product/DTOs/product.queryDTO';
-import { ProductUpdateDTO } from 'modules/Product/DTOs/product.updateDTO';
-import { ProductResource } from 'modules/Product/Resources/product.resource';
-import { ProductService } from 'modules/Product/product.service';
+import {
+    ProductCreateDTO,
+    ProductParamDTO,
+    ProductQueryDTO,
+    ProductResource,
+    ProductService,
+    ProductUpdateDTO,
+} from 'modules/Product/@namespace';
 
 @ApiTags('Product Controller')
 @Controller('api/v1/products')

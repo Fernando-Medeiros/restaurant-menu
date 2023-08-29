@@ -18,13 +18,16 @@ import {
     ApiOperation,
     ApiTags,
 } from '@nestjs/swagger';
-import { CategoryResource } from 'modules/Category/Resources/category.resource';
-import { ProductResource } from 'modules/Product/Resources/product.resource';
-import { CategoryCreateDTO } from 'src/Modules/Category/DTOs/category.createDTO';
-import { CategoryParamDTO } from 'src/Modules/Category/DTOs/category.paramDTO';
-import { CategoryQueryDTO } from 'src/Modules/Category/DTOs/category.queryDTO';
-import { CategoryUpdateDTO } from 'src/Modules/Category/DTOs/category.updateDTO';
-import { CategoryService } from 'src/Modules/Category/category.service';
+
+import {
+    CategoryCreateDTO,
+    CategoryParamDTO,
+    CategoryQueryDTO,
+    CategoryResource,
+    CategoryService,
+    CategoryUpdateDTO,
+} from 'modules/Category/@namespace';
+import { ProductResource } from 'modules/Product/@namespace';
 
 @ApiTags('Category Controller')
 @Controller('api/v1/categories')

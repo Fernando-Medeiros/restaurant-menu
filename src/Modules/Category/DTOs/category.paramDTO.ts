@@ -1,13 +1,14 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { IsOptional, IsString, Length } from 'class-validator';
 
 export class CategoryParamDTO {
-    @ApiProperty({ description: 'Token' })
+    @ApiPropertyOptional({ description: 'Token' })
     @IsString()
     @IsOptional()
+    @Length(24, 24)
     token?: string;
 
-    @ApiProperty({ description: 'Name' })
+    @ApiPropertyOptional({ description: 'Name' })
     @IsString()
     @IsOptional()
     name?: string;

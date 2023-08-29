@@ -16,7 +16,7 @@ export class CategoryQueryDTO {
 
     @ApiPropertyOptional({
         description: 'Skip',
-        default: 10,
+        default: 0,
         maximum: 99,
         minimum: 0,
     })

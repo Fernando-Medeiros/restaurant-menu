@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { CategoryRepository } from './Repository/category.repository';
-import { CategoryCreateDTO } from './DTOs/category.createDTO';
-import { CategoryUpdateDTO } from './DTOs/category.updateDTO';
-import { CategoryParamDTO } from './DTOs/category.paramDTO';
-import { CategoryQueryDTO } from './DTOs/category.queryDTO';
-import { CategoryDTO } from './DTOs/categoryDTO';
-import { ProductDTO } from '../Product/DTOs/productDTO';
-import NotFoundError from 'errors/NotFoundError';
+import {
+    CategoryUpdateDTO,
+    CategoryCreateDTO,
+    CategoryParamDTO,
+    CategoryQueryDTO,
+    CategoryDTO,
+    CategoryRepository,
+} from 'modules/Category/@namespace';
+import { ProductDTO } from 'modules/Product/@namespace';
+import { NotFoundError } from 'exceptions/@namespace';
 
 @Injectable()
 export class CategoryService {

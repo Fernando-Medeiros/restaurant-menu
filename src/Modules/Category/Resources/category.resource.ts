@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { CategoryDTO } from '../DTOs/categoryDTO';
+import { CategoryDTO } from 'modules/Category/@namespace';
 
 export class CategoryResource {
     @ApiProperty()

@@ -1,9 +1,11 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { SwaggerConfig } from './ModulesHelpers/Swagger/swagger.config';
-import { BadRequestInterceptor } from 'interceptors/badrequest.interceptor';
-import { NotFoundInterceptor } from 'interceptors/notfound.interceptor';
+import { SwaggerConfig } from 'modulesHelpers/Swagger/swagger.config';
+import {
+    BadRequestInterceptor,
+    NotFoundInterceptor,
+} from 'exceptions/@namespace';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);

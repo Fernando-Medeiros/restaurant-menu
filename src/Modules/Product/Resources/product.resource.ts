@@ -18,6 +18,9 @@ export class ProductResource {
     description: string;
 
     @ApiProperty()
+    categories: string[];
+
+    @ApiProperty()
     createdAt: Date;
 
     constructor(dto: ProductDTO) {
@@ -27,6 +30,7 @@ export class ProductResource {
         this.imageUrl = dto.imageUrl;
         this.description = dto.description;
         this.createdAt = dto.createdAt;
+        this.categories = dto.categoriesIDs;
     }
 
     static toArray(arr: ProductDTO[]): ProductResource[] {

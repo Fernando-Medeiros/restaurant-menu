@@ -11,5 +11,6 @@ export class CategoryParamDTO {
     @ApiPropertyOptional({ description: 'Name' })
     @IsString()
     @IsOptional()
+    @Length(3, 100)
     name?: string;
 }

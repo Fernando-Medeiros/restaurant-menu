@@ -6,6 +6,8 @@ import {
     Min,
     Max,
     IsOptional,
+    IsArray,
+    ArrayUnique,
 } from 'class-validator';
 
 export class ProductUpdateDTO {
@@ -33,4 +35,16 @@ export class ProductUpdateDTO {
     @IsString()
     @Length(3, 255)
     description: string;
+
+    @ApiPropertyOptional({
+        description: 'Array with Category Tokens ',
+        type: 'string',
+        isArray: true,
+    })
+    @IsOptional()
+    @IsArray()
+    @ArrayUnique()
+    @IsString({ each: true })
+    @Length(24, 24, { each: true })
+    categoriesIDs: string[];
 }

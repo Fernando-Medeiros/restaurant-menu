@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+    ArrayUnique,
+    IsArray,
     IsNotEmpty,
     IsNumber,
     IsString,
@@ -33,4 +35,16 @@ export class ProductCreateDTO {
     @IsNotEmpty()
     @Length(3, 255)
     description: string;
+
+    @ApiProperty({
+        description: 'Array with Category Tokens ',
+        type: 'string',
+        isArray: true,
+    })
+    @IsNotEmpty()
+    @IsArray()
+    @ArrayUnique()
+    @IsString({ each: true })
+    @Length(24, 24, { each: true })
+    categoriesIDs: string[];
 }

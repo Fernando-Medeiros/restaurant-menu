@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { ProductQueryDTO } from '../DTOs/product.queryDTO';
-import { ProductParamDTO } from '../DTOs/product.paramDTO';
-import { ProductCreateDTO } from '../DTOs/product.createDTO';
-import { ProductUpdateDTO } from '../DTOs/product.updateDTO';
-import { ProductDTO } from '../DTOs/productDTO';
 import { PrismaService } from 'modulesHelpers/Prisma/prisma.service';
+import {
+    ProductCreateDTO,
+    ProductDTO,
+    ProductParamDTO,
+    ProductQueryDTO,
+    ProductUpdateDTO,
+} from 'modules/Product/@namespace';
 
 @Injectable()
 export class ProductRepository {

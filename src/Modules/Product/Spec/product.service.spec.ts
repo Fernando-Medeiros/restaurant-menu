@@ -1,12 +1,15 @@
+import { Test } from '@nestjs/testing';
 import { PrismaService } from 'modulesHelpers/Prisma/prisma.service';
-import { MockProduct } from 'mocks/_mockData';
-import { ProductCreateDTO } from '../DTOs/product.createDTO';
-import { ProductQueryDTO } from '../DTOs/product.queryDTO';
-import { ProductUpdateDTO } from '../DTOs/product.updateDTO';
-import { ProductRepository } from '../Repository/product.repository';
-import { ProductParamDTO } from '../DTOs/product.paramDTO';
-import NotFoundError from 'errors/NotFoundError';
-import { ProductService } from '../product.service';
+import {
+    ProductCreateDTO,
+    ProductParamDTO,
+    ProductQueryDTO,
+    ProductRepository,
+    ProductUpdateDTO,
+    ProductService,
+} from 'modules/Product/@namespace';
+import { MockProduct } from 'mocks/mockData';
+import { NotFoundError } from 'exceptions/@namespace';
 
 describe('Unit - ProductService', () => {
     const createDTO: ProductCreateDTO = { ...MockProduct };
@@ -17,9 +20,14 @@ describe('Unit - ProductService', () => {
     let productRepository: ProductRepository;
     let productService: ProductService;
 
-    beforeEach(() => {
-        productRepository = new ProductRepository(new PrismaService());
-        productService = new ProductService(productRepository);
+    beforeEach(async () => {
+        const moduleRef = await Test.createTestingModule({
+            controllers: [],
+            providers: [PrismaService, ProductRepository, ProductService],
+        }).compile();
+
+        productRepository = moduleRef.get<ProductRepository>(ProductRepository);
+        productService = moduleRef.get<ProductService>(ProductService);
     });
 
     describe('Success', () => {
@@ -57,7 +65,7 @@ describe('Unit - ProductService', () => {
         describe('register', () => {
             const result = undefined;
 
-            it('should return register a product', async () => {
+            it('should  register a product', async () => {
                 jest.spyOn(productRepository, 'register').mockResolvedValueOnce(
                     result,
                 );
@@ -68,7 +76,7 @@ describe('Unit - ProductService', () => {
         describe('update', () => {
             const result = undefined;
 
-            it('should return update a product', async () => {
+            it('should  update a product', async () => {
                 jest.spyOn(productRepository, 'findOne').mockResolvedValueOnce(
                     MockProduct,
                 );
@@ -84,7 +92,7 @@ describe('Unit - ProductService', () => {
         describe('remove', () => {
             const result = undefined;
 
-            it('should return remove a product', async () => {
+            it('should remove a product', async () => {
                 jest.spyOn(productRepository, 'findOne').mockResolvedValueOnce(
                     MockProduct,
                 );
@@ -106,7 +114,7 @@ describe('Unit - ProductService', () => {
                 jest.spyOn(productRepository, 'findOne').mockResolvedValueOnce(
                     result,
                 );
-                await expect(productService.findOne({})).rejects.toThrow(
+                await expect(productService.findOne(Object())).rejects.toThrow(
                     NotFoundError,
                 );
             });

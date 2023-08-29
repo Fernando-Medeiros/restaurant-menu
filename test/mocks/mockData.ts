@@ -1,7 +1,5 @@
-import { ProductDTO } from 'modules/Product/DTOs/productDTO';
-import { CategoryDTO } from '../../src/Modules/Category/DTOs/categoryDTO';
-import { CategoryResource } from 'modules/Category/Resources/category.resource';
-import { ProductResource } from 'modules/Product/Resources/product.resource';
+import { CategoryDTO, CategoryResource } from 'modules/Category/@namespace';
+import { ProductDTO, ProductResource } from 'modules/Product/@namespace';
 
 export const MockCategory: CategoryDTO = {
     token: '64ed4ffa6d30117c1189f262',

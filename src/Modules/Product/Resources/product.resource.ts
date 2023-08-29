@@ -1,11 +1,23 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { ProductDTO } from '../DTOs/productDTO';
 
 export class ProductResource {
+    @ApiProperty()
     token: string;
+
+    @ApiProperty()
     name: string;
+
+    @ApiProperty()
     price: number;
+
+    @ApiProperty()
     imageUrl: string;
+
+    @ApiProperty()
     description: string;
+
+    @ApiProperty()
     createdAt: Date;
 
     constructor(dto: ProductDTO) {
@@ -18,6 +30,6 @@ export class ProductResource {
     }
 
     static toArray(arr: ProductDTO[]): ProductResource[] {
-        return arr.length > 0 ? arr.filter((c) => new ProductResource(c)) : [];
+        return arr.length > 0 ? arr.map((c) => new ProductResource(c)) : [];
     }
 }

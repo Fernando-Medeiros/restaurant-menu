@@ -38,5 +38,5 @@ export class ProductQueryDTO {
         enum: SortBy,
     })
     @IsEnum(SortBy)
-    sort?: string = SortBy.name;
+    sort?: SortBy = SortBy.name;
 }

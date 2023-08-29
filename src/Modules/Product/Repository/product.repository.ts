@@ -16,6 +16,7 @@ export class ProductRepository {
         const orderBy = {
             token: { token: order },
             name: { name: order },
+            price: { price: order },
             createdAt: { createdAt: order },
         };
 

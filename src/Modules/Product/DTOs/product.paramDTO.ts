@@ -5,6 +5,7 @@ export class ProductParamDTO {
     @ApiProperty({ description: 'Token' })
     @IsString()
     @IsOptional()
+    @Length(24, 24)
     token?: string;
 
     @ApiProperty({ description: 'Name' })

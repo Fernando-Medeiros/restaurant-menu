@@ -4,13 +4,22 @@ import {
     Delete,
     Get,
     HttpCode,
-    NotImplementedException,
     Param,
     Patch,
     Post,
     Query,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import {
+    ApiBadRequestResponse,
+    ApiCreatedResponse,
+    ApiNoContentResponse,
+    ApiNotFoundResponse,
+    ApiOkResponse,
+    ApiOperation,
+    ApiTags,
+} from '@nestjs/swagger';
+import { CategoryResource } from 'modules/Category/Resources/category.resource';
+import { ProductResource } from 'modules/Product/Resources/product.resource';
 import { CategoryCreateDTO } from 'src/Modules/Category/DTOs/category.createDTO';
 import { CategoryParamDTO } from 'src/Modules/Category/DTOs/category.paramDTO';
 import { CategoryQueryDTO } from 'src/Modules/Category/DTOs/category.queryDTO';
@@ -18,43 +27,71 @@ import { CategoryUpdateDTO } from 'src/Modules/Category/DTOs/category.updateDTO'
 import { CategoryService } from 'src/Modules/Category/category.service';
 
 @ApiTags('Category Controller')
-@Controller('categories')
+@Controller('api/v1/categories')
 export class CategoryController {
     constructor(private readonly _service: CategoryService) {}
 
     @Get('products')
-    async findProducts(@Param() param: CategoryParamDTO) {
-        throw new NotImplementedException('');
+    @ApiOperation({ summary: 'get products by category' })
+    @ApiOkResponse({ isArray: true, type: ProductResource })
+    async findProducts(@Query() query: CategoryParamDTO) {
+        const products = await this._service.findProducts(query);
+
+        return ProductResource.toArray(products);
     }
 
-    @Get('find')
+    @Get('find-many')
+    @ApiOperation({ summary: 'get categories' })
+    @ApiOkResponse({ isArray: true, type: CategoryResource })
     async findMany(@Query() query: CategoryQueryDTO) {
-        throw new NotImplementedException('');
+        const categories = await this._service.findMany(query);
+
+        return CategoryResource.toArray(categories);
     }
 
-    @Get()
-    async findOne(@Param() param: CategoryParamDTO) {
-        throw new NotImplementedException('');
+    @Get('find-one')
+    @ApiOperation({ summary: 'get a category' })
+    @ApiOkResponse({ type: CategoryResource })
+    @ApiBadRequestResponse({ description: 'bad request' })
+    @ApiNotFoundResponse({ description: 'not found' })
+    async findOne(@Query() query: CategoryParamDTO) {
+        const category = await this._service.findOne(query);
+
+        const resource = new CategoryResource(category);
+
+        return resource;
     }
 
     @Post()
+    @ApiOperation({ summary: 'register a category' })
+    @ApiCreatedResponse({ description: 'success' })
+    @ApiBadRequestResponse({ description: 'bad request' })
+    @ApiNotFoundResponse({ description: 'not found' })
     @HttpCode(201)
-    async register(@Body() body: CategoryCreateDTO) {
-        throw new NotImplementedException('');
+    async register(@Body() dto: CategoryCreateDTO) {
+        await this._service.register(dto);
     }
 
-    @Patch()
+    @Patch(':token')
+    @ApiOperation({ summary: 'update a category' })
+    @ApiBadRequestResponse({ description: 'bad request' })
+    @ApiNotFoundResponse({ description: 'not found' })
+    @ApiNoContentResponse({ description: 'success' })
     @HttpCode(204)
     async update(
         @Param('token') token: string,
-        @Body() body: CategoryUpdateDTO,
+        @Body() dto: CategoryUpdateDTO,
     ) {
-        throw new NotImplementedException('');
+        await this._service.update(token, dto);
     }
 
-    @Delete()
+    @Delete(':token')
+    @ApiOperation({ summary: 'remove a category' })
+    @ApiBadRequestResponse({ description: 'bad request' })
+    @ApiNotFoundResponse({ description: 'not found' })
+    @ApiNoContentResponse({ description: 'success' })
     @HttpCode(204)
     async remove(@Param('token') token: string) {
-        throw new NotImplementedException('');
+        await this._service.remove(token);
     }
 }

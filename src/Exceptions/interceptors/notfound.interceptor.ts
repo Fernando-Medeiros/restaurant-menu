@@ -1,6 +1,5 @@
 import { NotFoundException } from '@nestjs/common';
-import BaseInterceptor from './_base.Interceptor';
-import NotFoundError from 'errors/NotFoundError';
+import { NotFoundError, BaseInterceptor } from 'exceptions/@namespace';
 
 export class NotFoundInterceptor extends BaseInterceptor {
     callback(error: any) {

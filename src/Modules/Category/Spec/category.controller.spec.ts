@@ -1,104 +1,97 @@
+import { Test } from '@nestjs/testing';
 import { PrismaService } from 'modulesHelpers/Prisma/prisma.service';
-import { CategoryRepository } from '../Repository/category.repository';
-import { CategoryParamDTO } from '../DTOs/category.paramDTO';
-import { CategoryQueryDTO } from '../DTOs/category.queryDTO';
-import { CategoryCreateDTO } from '../DTOs/category.createDTO';
-import { CategoryUpdateDTO } from '../DTOs/category.updateDTO';
+import { CategoryController } from 'controllers/v1/@namespace';
+import { NotFoundError } from 'exceptions/@namespace';
+import {
+    CategoryCreateDTO,
+    CategoryParamDTO,
+    CategoryQueryDTO,
+    CategoryRepository,
+    CategoryService,
+    CategoryUpdateDTO,
+} from 'modules/Category/@namespace';
 import {
     MockCategory,
     MockCategoryResource,
     MockProduct,
     MockProductResource,
-} from 'mocks/_mockData';
-import { CategoryService } from '../category.service';
-import NotFoundError from 'errors/NotFoundError';
-import { CategoryController } from 'controllers/v1/category.controller';
+} from 'mocks/mockData';
 
 describe('Unit - CategoryController', () => {
-    let createDTO: CategoryCreateDTO;
-    let updateDTO: CategoryUpdateDTO;
-    let queryDTO: CategoryQueryDTO;
-    let paramDTO: CategoryParamDTO;
+    const createDTO: CategoryCreateDTO = { ...MockCategory };
+    const updateDTO: CategoryUpdateDTO = { ...MockCategory };
+    const paramDTO: CategoryParamDTO = { ...MockCategory };
+    const queryDTO = new CategoryQueryDTO();
+
     let categoryService: CategoryService;
     let categoryController: CategoryController;
 
-    beforeEach(() => {
-        createDTO = new CategoryCreateDTO();
-        updateDTO = new CategoryUpdateDTO();
-        queryDTO = new CategoryQueryDTO();
-        paramDTO = new CategoryParamDTO();
-        categoryService = new CategoryService(
-            new CategoryRepository(new PrismaService()),
-        );
-        categoryController = new CategoryController(categoryService);
+    beforeEach(async () => {
+        const moduleRef = await Test.createTestingModule({
+            controllers: [CategoryController],
+            providers: [PrismaService, CategoryRepository, CategoryService],
+        }).compile();
+
+        categoryService = moduleRef.get<CategoryService>(CategoryService);
+        categoryController =
+            moduleRef.get<CategoryController>(CategoryController);
     });
 
     describe('Success', () => {
         describe('findProducts', () => {
+            const result = [MockProduct];
+            const output = [MockProductResource];
+
             it('should return an array of products resources', async () => {
-                const result = [MockProduct];
-                const output = [MockProductResource];
-
-                jest.spyOn(
-                    categoryService,
-                    'findProducts',
-                ).mockResolvedValueOnce(result);
-
+                jest.spyOn(categoryService, 'findProducts').mockImplementation(
+                    async () => result,
+                );
                 expect(
                     await categoryController.findProducts(paramDTO),
                 ).toStrictEqual(output);
             });
+
             it('should return an empty array', async () => {
-                const result = [];
-                const output = [];
-
-                jest.spyOn(
-                    categoryService,
-                    'findProducts',
-                ).mockResolvedValueOnce(result);
-
+                jest.spyOn(categoryService, 'findProducts').mockImplementation(
+                    async () => [],
+                );
                 expect(
                     await categoryController.findProducts(paramDTO),
-                ).toStrictEqual(output);
+                ).toStrictEqual([]);
             });
         });
 
         describe('findMany', () => {
+            const result = [MockCategory];
+            const output = [MockCategoryResource];
+
             it('should return an array of categories resources', async () => {
-                const result = [MockCategory];
-                const output = [MockCategoryResource];
-
-                jest.spyOn(categoryService, 'findMany').mockResolvedValueOnce(
-                    result,
+                jest.spyOn(categoryService, 'findMany').mockImplementation(
+                    async () => result,
                 );
-
                 expect(
                     await categoryController.findMany(queryDTO),
                 ).toStrictEqual(output);
             });
+
             it('should return an empty array', async () => {
-                const result = [];
-                const output = [];
-
-                jest.spyOn(categoryService, 'findMany').mockResolvedValueOnce(
-                    result,
+                jest.spyOn(categoryService, 'findMany').mockImplementation(
+                    async () => [],
                 );
-
                 expect(
                     await categoryController.findMany(queryDTO),
-                ).toStrictEqual(output);
+                ).toStrictEqual([]);
             });
         });
 
         describe('findOne', () => {
+            const result = MockCategory;
+            const output = MockCategoryResource;
+
             it('should return a category resource', async () => {
-                const result = MockCategory;
-                const output = MockCategoryResource;
-
-                jest.spyOn(categoryService, 'findOne').mockResolvedValueOnce(
-                    result,
+                jest.spyOn(categoryService, 'findOne').mockImplementation(
+                    async () => result,
                 );
-
                 expect(
                     await categoryController.findOne(paramDTO),
                 ).toStrictEqual(output);
@@ -106,46 +99,40 @@ describe('Unit - CategoryController', () => {
         });
 
         describe('register', () => {
+            const result = undefined;
+
             it('should register a category ', async () => {
-                const result = undefined;
-                const output = undefined;
-
-                jest.spyOn(categoryService, 'register').mockResolvedValueOnce(
-                    result,
+                jest.spyOn(categoryService, 'register').mockImplementation(
+                    () => result,
                 );
-
                 expect(
                     await categoryController.register(createDTO),
-                ).toStrictEqual(output);
+                ).toStrictEqual(result);
             });
         });
 
         describe('update', () => {
+            const result = undefined;
+
             it('should update a category ', async () => {
-                const result = undefined;
-                const output = undefined;
-
-                jest.spyOn(categoryService, 'update').mockResolvedValueOnce(
-                    result,
+                jest.spyOn(categoryService, 'update').mockImplementation(
+                    () => result,
                 );
-
                 expect(
                     await categoryController.update('token', updateDTO),
-                ).toStrictEqual(output);
+                ).toStrictEqual(result);
             });
         });
 
         describe('remove', () => {
+            const result = undefined;
+
             it('should remove a category ', async () => {
-                const result = undefined;
-                const output = undefined;
-
-                jest.spyOn(categoryService, 'remove').mockResolvedValueOnce(
-                    result,
+                jest.spyOn(categoryService, 'remove').mockImplementation(
+                    () => result,
                 );
-
                 expect(await categoryController.remove('token')).toStrictEqual(
-                    output,
+                    result,
                 );
             });
         });
@@ -164,7 +151,7 @@ describe('Unit - CategoryController', () => {
         });
 
         describe('update', () => {
-            it('should update a category ', async () => {
+            it('should return a NotFound if category not exists ', async () => {
                 jest.spyOn(categoryService, 'update').mockRejectedValue(
                     new NotFoundError(),
                 );

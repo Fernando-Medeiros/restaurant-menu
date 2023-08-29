@@ -1,13 +1,16 @@
+import { Test } from '@nestjs/testing';
 import { PrismaService } from 'modulesHelpers/Prisma/prisma.service';
-import { MockProduct, MockProductResource } from 'mocks/_mockData';
-import { ProductController } from 'controllers/v1/product.controller';
-import { ProductCreateDTO } from '../DTOs/product.createDTO';
-import { ProductParamDTO } from '../DTOs/product.paramDTO';
-import { ProductQueryDTO } from '../DTOs/product.queryDTO';
-import { ProductUpdateDTO } from '../DTOs/product.updateDTO';
-import { ProductRepository } from '../Repository/product.repository';
-import NotFoundError from 'errors/NotFoundError';
-import { ProductService } from '../product.service';
+import { ProductController } from 'controllers/v1/@namespace';
+import {
+    ProductCreateDTO,
+    ProductParamDTO,
+    ProductQueryDTO,
+    ProductRepository,
+    ProductService,
+    ProductUpdateDTO,
+} from 'modules/Product/@namespace';
+import { MockProduct, MockProductResource } from 'mocks/mockData';
+import { NotFoundError } from 'exceptions/@namespace';
 
 describe('Unit - ProductController', () => {
     const createDTO: ProductCreateDTO = { ...MockProduct };
@@ -18,11 +21,14 @@ describe('Unit - ProductController', () => {
     let productService: ProductService;
     let productController: ProductController;
 
-    beforeEach(() => {
-        productService = new ProductService(
-            new ProductRepository(new PrismaService()),
-        );
-        productController = new ProductController(productService);
+    beforeEach(async () => {
+        const moduleRef = await Test.createTestingModule({
+            controllers: [ProductController],
+            providers: [PrismaService, ProductRepository, ProductService],
+        }).compile();
+
+        productService = moduleRef.get<ProductService>(ProductService);
+        productController = moduleRef.get<ProductController>(ProductController);
     });
 
     describe('Success', () => {
@@ -131,6 +137,7 @@ describe('Unit - ProductController', () => {
                 jest.spyOn(productService, 'remove').mockRejectedValue(
                     new NotFoundError(),
                 );
+
                 await expect(productController.remove('111')).rejects.toThrow(
                     NotFoundError,
                 );

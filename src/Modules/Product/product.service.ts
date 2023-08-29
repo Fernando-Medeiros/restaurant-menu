@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { ProductRepository } from './Repository/product.repository';
-import { ProductCreateDTO } from './DTOs/product.createDTO';
-import { ProductParamDTO } from './DTOs/product.paramDTO';
-import { ProductQueryDTO } from './DTOs/product.queryDTO';
-import { ProductUpdateDTO } from './DTOs/product.updateDTO';
-import { ProductDTO } from './DTOs/productDTO';
-import NotFoundError from 'errors/NotFoundError';
+import {
+    ProductCreateDTO,
+    ProductDTO,
+    ProductParamDTO,
+    ProductQueryDTO,
+    ProductRepository,
+    ProductUpdateDTO,
+} from 'modules/Product/@namespace';
+import { NotFoundError } from 'exceptions/@namespace';
 
 @Injectable()
 export class ProductService {

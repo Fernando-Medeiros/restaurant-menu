@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { CategoryUpdateDTO } from '../DTOs/category.updateDTO';
-import { CategoryCreateDTO } from '../DTOs/category.createDTO';
-import { CategoryParamDTO } from '../DTOs/category.paramDTO';
-import { CategoryQueryDTO } from '../DTOs/category.queryDTO';
-import { CategoryDTO } from '../DTOs/categoryDTO';
-import { ProductDTO } from 'modules/Product/DTOs/productDTO';
 import { PrismaService } from 'modulesHelpers/Prisma/prisma.service';
+import { ProductDTO } from 'modules/Product/@namespace';
+import {
+    CategoryUpdateDTO,
+    CategoryCreateDTO,
+    CategoryParamDTO,
+    CategoryQueryDTO,
+    CategoryDTO,
+} from 'modules/Category/@namespace';
 
 @Injectable()
 export class CategoryRepository {

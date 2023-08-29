@@ -1,10 +1,13 @@
+import { Test } from '@nestjs/testing';
 import { PrismaService } from 'modulesHelpers/Prisma/prisma.service';
-import { MockProduct } from 'mocks/_mockData';
-import { ProductCreateDTO } from '../DTOs/product.createDTO';
-import { ProductQueryDTO } from '../DTOs/product.queryDTO';
-import { ProductUpdateDTO } from '../DTOs/product.updateDTO';
-import { ProductRepository } from '../Repository/product.repository';
-import { ProductParamDTO } from '../DTOs/product.paramDTO';
+import {
+    ProductCreateDTO,
+    ProductParamDTO,
+    ProductQueryDTO,
+    ProductRepository,
+    ProductUpdateDTO,
+} from 'modules/Product/@namespace';
+import { MockProduct } from 'mocks/mockData';
 
 describe('Unit - ProductRepository', () => {
     const createDTO: ProductCreateDTO = { ...MockProduct };
@@ -15,9 +18,14 @@ describe('Unit - ProductRepository', () => {
     let prismaService: PrismaService;
     let productRepository: ProductRepository;
 
-    beforeEach(() => {
-        prismaService = new PrismaService();
-        productRepository = new ProductRepository(prismaService);
+    beforeEach(async () => {
+        const moduleRef = await Test.createTestingModule({
+            controllers: [],
+            providers: [PrismaService, ProductRepository],
+        }).compile();
+
+        prismaService = moduleRef.get<PrismaService>(PrismaService);
+        productRepository = moduleRef.get<ProductRepository>(ProductRepository);
     });
 
     describe('Success', () => {
@@ -29,6 +37,7 @@ describe('Unit - ProductRepository', () => {
                     prismaService.product,
                     'findMany',
                 ).mockResolvedValueOnce(result);
+
                 expect(await productRepository.findMany(queryDTO)).toBe(result);
             });
 
@@ -37,6 +46,7 @@ describe('Unit - ProductRepository', () => {
                     prismaService.product,
                     'findMany',
                 ).mockResolvedValueOnce([]);
+
                 expect(
                     await productRepository.findMany(queryDTO),
                 ).toStrictEqual([]);
@@ -64,6 +74,7 @@ describe('Unit - ProductRepository', () => {
                     prismaService.product,
                     'create',
                 ).mockResolvedValueOnce(result);
+
                 expect(await productRepository.register(createDTO)).toBe(
                     result,
                 );
@@ -78,6 +89,7 @@ describe('Unit - ProductRepository', () => {
                     prismaService.product,
                     'update',
                 ).mockResolvedValueOnce(result);
+
                 expect(
                     await productRepository.update(
                         MockProduct.token,
@@ -95,6 +107,7 @@ describe('Unit - ProductRepository', () => {
                     prismaService.product,
                     'delete',
                 ).mockResolvedValueOnce(result);
+
                 expect(await productRepository.remove(MockProduct.token)).toBe(
                     result,
                 );
@@ -112,7 +125,7 @@ describe('Unit - ProductRepository', () => {
                     'findFirst',
                 ).mockResolvedValueOnce(result);
 
-                expect(await productRepository.findOne({})).toBe(result);
+                expect(await productRepository.findOne(Object())).toBe(result);
             });
         });
     });

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ProductDTO } from '../DTOs/productDTO';
+import { ProductDTO } from 'modules/Product/@namespace';
 
 export class ProductResource {
     @ApiProperty()

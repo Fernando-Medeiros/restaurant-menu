@@ -1,8 +1,14 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { CategoryDTO } from '../DTOs/categoryDTO';
 
 export class CategoryResource {
+    @ApiProperty()
     token: string;
+
+    @ApiProperty()
     name: string;
+
+    @ApiProperty()
     createdAt: Date;
 
     constructor(dto: CategoryDTO) {
@@ -12,6 +18,6 @@ export class CategoryResource {
     }
 
     static toArray(arr: CategoryDTO[]): CategoryResource[] {
-        return arr.length > 0 ? arr.filter((c) => new CategoryResource(c)) : [];
+        return arr.length > 0 ? arr.map((c) => new CategoryResource(c)) : [];
     }
 }

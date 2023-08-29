@@ -20,8 +20,7 @@
         "noFallthroughCasesInSwitch": false,
         "types": ["@types/jest"],
         "paths": {
-            "errors/*": ["src/Exceptions/types/*"],
-            "interceptors/*": ["src/Exceptions/interceptors/*"],
+            "exceptions/*": ["src/Exceptions/*"],
             "controllers/*": ["src/Controllers/*"],
             "modules/*": ["src/Modules/*"],
             "modulesHelpers/*": ["src/ModulesHelpers/*"],

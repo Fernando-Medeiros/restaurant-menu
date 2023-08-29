@@ -7,7 +7,7 @@ import {
     ProductRepository,
     ProductUpdateDTO,
 } from 'modules/Product/@namespace';
-import { NotFoundError } from 'exceptions/@namespace';
+import { BadRequestError, NotFoundError } from 'exceptions/@namespace';
 
 @Injectable()
 export class ProductService {
@@ -26,6 +26,8 @@ export class ProductService {
     }
 
     async register(dto: ProductCreateDTO): Promise<void> {
+        await this.throwProductExists({ ...dto });
+
         await this._repository.register(dto);
     }
 
@@ -39,5 +41,12 @@ export class ProductService {
         await this.findOne({ token });
 
         await this._repository.remove(token);
+    }
+
+    private async throwProductExists(dto: ProductParamDTO): Promise<void> {
+        if ((await this._repository.findOne(dto)) != null)
+            throw new BadRequestError(
+                'There is already a product registered with that name',
+            );
     }
 }

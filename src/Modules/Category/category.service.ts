@@ -8,7 +8,7 @@ import {
     CategoryRepository,
 } from 'modules/Category/@namespace';
 import { ProductDTO } from 'modules/Product/@namespace';
-import { NotFoundError } from 'exceptions/@namespace';
+import { BadRequestError, NotFoundError } from 'exceptions/@namespace';
 
 @Injectable()
 export class CategoryService {
@@ -31,6 +31,8 @@ export class CategoryService {
     }
 
     async register(dto: CategoryCreateDTO): Promise<void> {
+        await this.throwCategoryExists({ ...dto });
+
         await this._repository.register(dto);
     }
 
@@ -44,5 +46,12 @@ export class CategoryService {
         await this.findOne({ token });
 
         await this._repository.remove(token);
+    }
+
+    private async throwCategoryExists(dto: CategoryParamDTO): Promise<void> {
+        if ((await this._repository.findOne(dto)) != null)
+            throw new BadRequestError(
+                'There is already a category registered with that name',
+            );
     }
 }

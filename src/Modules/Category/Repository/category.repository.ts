@@ -43,10 +43,10 @@ export class CategoryRepository {
     async findOne(dto: CategoryParamDTO): Promise<CategoryDTO | null> {
         const { token, name } = dto;
 
-        const query = {
-            ...(token && { token }),
-            ...(name && { name }),
-        };
+        const query = token ? { token } : name ? { name } : null;
+
+        if (query == null) return null;
+
         return this._context.category.findFirst({ where: query });
     }
 

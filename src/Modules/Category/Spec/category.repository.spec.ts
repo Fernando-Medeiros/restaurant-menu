@@ -10,7 +10,6 @@ describe('Unit - CategoryRepository', () => {
     let createDTO: CategoryCreateDTO;
     let updateDTO: CategoryUpdateDTO;
     let queryDTO: CategoryQueryDTO;
-    let paramDTO: CategoryParamDTO;
     let prismaService: PrismaService;
     let categoryRepository: CategoryRepository;
 
@@ -18,7 +17,6 @@ describe('Unit - CategoryRepository', () => {
         createDTO = new CategoryCreateDTO();
         updateDTO = new CategoryUpdateDTO();
         queryDTO = new CategoryQueryDTO();
-        paramDTO = new CategoryParamDTO();
         prismaService = new PrismaService();
         categoryRepository = new CategoryRepository(prismaService);
     });
@@ -31,9 +29,9 @@ describe('Unit - CategoryRepository', () => {
                 result,
             );
 
-            expect(await categoryRepository.findProducts(paramDTO)).toBe(
-                result,
-            );
+            expect(
+                await categoryRepository.findProducts({ token: 'token' }),
+            ).toBe(result);
         });
     });
 
@@ -59,7 +57,9 @@ describe('Unit - CategoryRepository', () => {
                 'findFirst',
             ).mockResolvedValueOnce(result);
 
-            expect(await categoryRepository.findOne(paramDTO)).toBe(result);
+            expect(await categoryRepository.findOne({ token: 'token' })).toBe(
+                result,
+            );
         });
     });
 

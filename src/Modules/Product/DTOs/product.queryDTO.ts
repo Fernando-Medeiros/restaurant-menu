@@ -1,5 +1,5 @@
-import { IsEnum, IsOptional, Length } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Length, IsEnum, IsNumberString } from 'class-validator';
 import { OrderBy } from '../Enum/orderby';
 import { SortBy } from '../Enum/sortby';
 
@@ -7,21 +7,25 @@ export class ProductQueryDTO {
     @ApiPropertyOptional({
         description: 'Take',
         default: 10,
-        maximum: 99,
         minimum: 1,
+        maximum: 99,
+        type: 'string',
     })
-    @IsOptional()
-    @Length(0, 2)
+    @Length(0, 2, { message: 'must be greater than 1 and less than 99' })
+    @IsNumberString()
     take?: string = '10';
 
     @ApiPropertyOptional({
         description: 'Skip',
         default: 0,
-        maximum: 99,
         minimum: 0,
+        maximum: 99,
+        type: 'string',
     })
-    @IsOptional()
-    @Length(0, 2)
+    @Length(0, 2, {
+        message: 'must be greater or equal than 0 and less than 99',
+    })
+    @IsNumberString()
     skip?: string = '0';
 
     @ApiPropertyOptional({

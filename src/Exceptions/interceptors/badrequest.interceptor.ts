@@ -1,6 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
-import BaseInterceptor from './_base.Interceptor';
-import BadRequestError from 'errors/BadRequestError';
+import { BadRequestError, BaseInterceptor } from 'exceptions/@namespace';
 
 export class BadRequestInterceptor extends BaseInterceptor {
     callback(error: any) {

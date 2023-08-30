@@ -17,6 +17,10 @@ export class MenuService {
         private readonly _productService: ProductService,
     ) {}
 
+    async findManyByCurrentPeriod(): Promise<MenuDTO[] | []> {
+        return this._repository.findManyByCurrentPeriod();
+    }
+
     async findMany(query: MenuQueryDTO): Promise<MenuDTO[] | []> {
         return this._repository.findMany(query);
     }

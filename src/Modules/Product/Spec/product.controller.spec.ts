@@ -11,6 +11,10 @@ import {
 } from 'modules/Product/@namespace';
 import { MockProduct, MockProductResource } from 'mocks/mockData';
 import { NotFoundError } from 'exceptions/@namespace';
+import {
+    CategoryRepository,
+    CategoryService,
+} from 'modules/Category/@namespace';
 
 describe('Unit - ProductController', () => {
     const createDTO: ProductCreateDTO = { ...MockProduct };
@@ -24,7 +28,13 @@ describe('Unit - ProductController', () => {
     beforeEach(async () => {
         const moduleRef = await Test.createTestingModule({
             controllers: [ProductController],
-            providers: [PrismaService, ProductRepository, ProductService],
+            providers: [
+                PrismaService,
+                ProductRepository,
+                ProductService,
+                CategoryService,
+                CategoryRepository,
+            ],
         }).compile();
 
         productService = moduleRef.get<ProductService>(ProductService);

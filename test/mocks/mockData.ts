@@ -6,7 +6,8 @@ export const MockCategory: CategoryDTO = {
     name: 'Mock Category',
     createdAt: new Date(),
     updatedAt: new Date(),
-    productsIDs: [],
+    productsIDs: [] as string[],
+    products: [] as ProductDTO[],
 };
 
 export const MockProduct: ProductDTO = {
@@ -17,7 +18,8 @@ export const MockProduct: ProductDTO = {
     price: 9.99,
     createdAt: new Date(),
     updatedAt: new Date(),
-    categoriesIDs: [],
+    categoriesIDs: [] as string[],
+    categories: [] as CategoryDTO[],
 };
 
 export const MockCategoryResource: CategoryResource = new CategoryResource(

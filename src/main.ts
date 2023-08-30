@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { SwaggerConfig } from 'modulesHelpers/Swagger/swagger.config';
 import {
     BadRequestInterceptor,
+    DatabaseInterceptor,
     NotFoundInterceptor,
 } from 'exceptions/@namespace';
 
@@ -21,7 +22,11 @@ async function bootstrap() {
     );
 
     app.useGlobalInterceptors(
-        ...[new NotFoundInterceptor(), new BadRequestInterceptor()],
+        ...[
+            new NotFoundInterceptor(),
+            new BadRequestInterceptor(),
+            new DatabaseInterceptor(),
+        ],
     );
 
     await app.listen(3000);

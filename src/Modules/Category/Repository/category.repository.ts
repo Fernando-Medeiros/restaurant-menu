@@ -14,14 +14,14 @@ export class CategoryRepository {
     constructor(private readonly _context: PrismaService) {}
 
     async findProducts(dto: CategoryParamDTO): Promise<ProductDTO[] | []> {
-        const { token, name } = dto;
+        let { token } = dto;
+
+        if (!token && dto.name) {
+            token = (await this.findOne({ name: dto.name }))?.token;
+        }
+
         return this._context.product.findMany({
-            where: {
-                OR: [
-                    token && { categoriesIDs: { has: token } },
-                    name && { categories: { every: { name } } },
-                ],
-            },
+            where: { OR: [token && { categoriesIDs: { has: token } }] },
             include: { categories: true },
         });
     }

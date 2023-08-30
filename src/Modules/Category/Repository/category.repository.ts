@@ -15,14 +15,14 @@ export class CategoryRepository {
 
     async findProducts(dto: CategoryParamDTO): Promise<ProductDTO[] | []> {
         const { token, name } = dto;
-
-        const query = {
-            ...(token && { token }),
-            ...(name && { name }),
-        };
-
         return this._context.product.findMany({
-            where: { categories: { some: { ...query } } },
+            where: {
+                OR: [
+                    token && { categoriesIDs: { has: token } },
+                    name && { categories: { every: { name } } },
+                ],
+            },
+            include: { categories: true },
         });
     }
 
@@ -36,20 +36,17 @@ export class CategoryRepository {
         };
 
         return this._context.category.findMany({
-            take: +query.take,
-            skip: +query.skip,
+            take: Math.abs(+query.take),
+            skip: Math.abs(+query.skip),
             orderBy: orderBy[sort],
         });
     }
 
     async findOne(dto: CategoryParamDTO): Promise<CategoryDTO | null> {
         const { token, name } = dto;
-
-        const query = token ? { token } : name ? { name } : null;
-
-        if (query == null) return null;
-
-        return this._context.category.findFirst({ where: query });
+        return this._context.category.findFirst({
+            where: { OR: [token && { token }, name && { name }] },
+        });
     }
 
     async register(dto: CategoryCreateDTO): Promise<void> {

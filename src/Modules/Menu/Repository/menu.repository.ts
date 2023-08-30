@@ -7,10 +7,26 @@ import {
     MenuQueryDTO,
     MenuUpdateDTO,
 } from 'modules/Menu/@namespace';
+import { Period } from '@prisma/client';
 
 @Injectable()
 export class MenuRepository {
     constructor(private readonly _context: PrismaService) {}
+
+    async findManyByCurrentPeriod(): Promise<MenuDTO[] | []> {
+        const hour: number = +new Date().toLocaleTimeString('pt-BR', {
+            hourCycle: 'h24',
+            hour: '2-digit',
+        });
+
+        const period =
+            hour > 6 && hour < 18 ? Period.daytime : Period.nighttime;
+
+        return this._context.menu.findMany({
+            where: { period },
+            include: { product: { include: { categories: true } } },
+        });
+    }
 
     async findMany(query: MenuQueryDTO): Promise<MenuDTO[] | []> {
         const { order, sort } = query;

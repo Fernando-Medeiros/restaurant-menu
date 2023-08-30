@@ -32,6 +32,14 @@ import {
 export class MenuController {
     constructor(private readonly _service: MenuService) {}
 
+    @Get('period')
+    @ApiOperation({ summary: 'get records from menu in current period' })
+    @ApiOkResponse({ isArray: true, type: MenuResource })
+    async findManyByCurrentPeriod() {
+        const menus = await this._service.findManyByCurrentPeriod();
+        return MenuResource.toArray(menus);
+    }
+
     @Get('find-many')
     @ApiOperation({ summary: 'get many records from the menu' })
     @ApiOkResponse({ isArray: true, type: MenuResource })

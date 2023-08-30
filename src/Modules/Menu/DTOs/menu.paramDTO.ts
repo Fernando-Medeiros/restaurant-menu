@@ -1,4 +1,4 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiHideProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsString, Length, IsOptional } from 'class-validator';
 
 export class MenuParamDTO {
@@ -7,4 +7,7 @@ export class MenuParamDTO {
     @IsOptional()
     @Length(24, 24)
     token?: string;
+
+    @ApiHideProperty()
+    productToken?: string;
 }

@@ -1,9 +1,10 @@
+import { Module } from '@nestjs/common';
+import { MenuModule } from 'modules/Menu/menu.module';
 import { ProductModule } from 'modules/Product/product.module';
 import { CategoryModule } from 'modules/Category/category.module';
-import { Module } from '@nestjs/common';
 
 @Module({
-    imports: [ProductModule, CategoryModule],
+    imports: [MenuModule, ProductModule, CategoryModule],
     controllers: [],
     providers: [],
 })

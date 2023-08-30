@@ -8,8 +8,12 @@ import {
     ProductUpdateDTO,
     ProductService,
 } from 'modules/Product/@namespace';
+import {
+    CategoryRepository,
+    CategoryService,
+} from 'modules/Category/@namespace';
 import { MockProduct } from 'mocks/mockData';
-import { NotFoundError } from 'exceptions/@namespace';
+import { BadRequestError, NotFoundError } from 'exceptions/@namespace';
 
 describe('Unit - ProductService', () => {
     const createDTO: ProductCreateDTO = { ...MockProduct };
@@ -23,7 +27,13 @@ describe('Unit - ProductService', () => {
     beforeEach(async () => {
         const moduleRef = await Test.createTestingModule({
             controllers: [],
-            providers: [PrismaService, ProductRepository, ProductService],
+            providers: [
+                PrismaService,
+                ProductService,
+                ProductRepository,
+                CategoryService,
+                CategoryRepository,
+            ],
         }).compile();
 
         productRepository = moduleRef.get<ProductRepository>(ProductRepository);
@@ -38,6 +48,7 @@ describe('Unit - ProductService', () => {
                 jest.spyOn(productRepository, 'findMany').mockResolvedValueOnce(
                     result,
                 );
+
                 expect(await productService.findMany(queryDTO)).toBe(result);
             });
 
@@ -66,9 +77,14 @@ describe('Unit - ProductService', () => {
             const result = undefined;
 
             it('should  register a product', async () => {
+                jest.spyOn(productRepository, 'findOne').mockResolvedValueOnce(
+                    result,
+                );
+
                 jest.spyOn(productRepository, 'register').mockResolvedValueOnce(
                     result,
                 );
+
                 expect(await productService.register(createDTO)).toBe(result);
             });
         });
@@ -120,6 +136,18 @@ describe('Unit - ProductService', () => {
             });
         });
 
+        describe('register', () => {
+            it('should return BadRequest if product already exists', async () => {
+                jest.spyOn(productRepository, 'findOne').mockResolvedValueOnce(
+                    MockProduct,
+                );
+
+                await expect(
+                    productService.register(createDTO),
+                ).rejects.toThrow(BadRequestError);
+            });
+        });
+
         describe('update', () => {
             const result = undefined;
 
@@ -127,9 +155,7 @@ describe('Unit - ProductService', () => {
                 jest.spyOn(productRepository, 'findOne').mockResolvedValueOnce(
                     result,
                 );
-                jest.spyOn(productRepository, 'update').mockResolvedValueOnce(
-                    result,
-                );
+
                 await expect(
                     productService.update('token', updateDTO),
                 ).rejects.toThrow(NotFoundError);

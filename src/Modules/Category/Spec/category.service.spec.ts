@@ -8,7 +8,7 @@ import {
     CategoryService,
     CategoryUpdateDTO,
 } from 'modules/Category/@namespace';
-import { NotFoundError } from 'exceptions/@namespace';
+import { BadRequestError, NotFoundError } from 'exceptions/@namespace';
 import { MockCategory, MockProduct } from 'mocks/mockData';
 
 describe('Unit - CategoryService', () => {
@@ -102,6 +102,11 @@ describe('Unit - CategoryService', () => {
                 it('should register a category', async () => {
                     jest.spyOn(
                         categoryRepository,
+                        'findOne',
+                    ).mockImplementation(async () => result);
+
+                    jest.spyOn(
+                        categoryRepository,
                         'register',
                     ).mockImplementation(async () => result);
 
@@ -161,6 +166,26 @@ describe('Unit - CategoryService', () => {
                     await expect(
                         categoryService.findOne(paramDTO),
                     ).rejects.toThrow(NotFoundError);
+                });
+            });
+
+            describe('register', () => {
+                const result = undefined;
+
+                it('should return BadRequest if category nothing exists', async () => {
+                    jest.spyOn(
+                        categoryRepository,
+                        'findOne',
+                    ).mockResolvedValueOnce(MockCategory);
+
+                    jest.spyOn(
+                        categoryRepository,
+                        'register',
+                    ).mockImplementation(async () => result);
+
+                    await expect(
+                        categoryService.register(createDTO),
+                    ).rejects.toThrow(BadRequestError);
                 });
             });
 

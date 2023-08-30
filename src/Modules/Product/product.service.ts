@@ -8,10 +8,14 @@ import {
     ProductUpdateDTO,
 } from 'modules/Product/@namespace';
 import { BadRequestError, NotFoundError } from 'exceptions/@namespace';
+import { CategoryService } from 'modules/Category/@namespace';
 
 @Injectable()
 export class ProductService {
-    constructor(private readonly _repository: ProductRepository) {}
+    constructor(
+        private readonly _repository: ProductRepository,
+        private readonly _categoryService: CategoryService,
+    ) {}
 
     async findMany(query: ProductQueryDTO): Promise<ProductDTO[] | []> {
         return this._repository.findMany(query);
@@ -28,13 +32,24 @@ export class ProductService {
     async register(dto: ProductCreateDTO): Promise<void> {
         await this.throwProductExists({ ...dto });
 
+        await this._categoryService.throwCheckCategories(dto.categoriesIDs);
+
         await this._repository.register(dto);
     }
 
     async update(token: string, dto: ProductUpdateDTO): Promise<void> {
-        await this.findOne({ token });
+        const product = await this.findOne({ token });
 
-        await this._repository.update(token, dto);
+        await this.throwProductExists({ ...dto });
+
+        await this._categoryService.throwCheckCategories(dto.categoriesIDs);
+
+        await this._repository.update(token, {
+            ...dto,
+            categoriesIDs: [
+                ...new Set([...dto.categoriesIDs, ...product.categoriesIDs]),
+            ],
+        });
     }
 
     async remove(token: string): Promise<void> {

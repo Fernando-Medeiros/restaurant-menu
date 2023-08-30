@@ -1,4 +1,5 @@
 import { Product } from '@prisma/client';
+import { CategoryDTO } from 'modules/Category/@namespace';
 
 export class ProductDTO implements Product {
     token: string;
@@ -8,5 +9,7 @@ export class ProductDTO implements Product {
     description: string;
     createdAt: Date;
     updatedAt: Date;
+
     categoriesIDs: string[];
+    categories?: CategoryDTO[];
 }

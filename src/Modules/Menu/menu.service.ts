@@ -7,7 +7,7 @@ import {
     MenuRepository,
     MenuUpdateDTO,
 } from './@namespace';
-import { NotFoundError } from 'exceptions/@namespace';
+import { BadRequestError, NotFoundError } from 'exceptions/@namespace';
 import { ProductService } from 'modules/Product/@namespace';
 
 @Injectable()
@@ -30,17 +30,41 @@ export class MenuService {
 
     async register(dto: MenuCreateDTO): Promise<void> {
         await this._productService.findOne({ token: dto.productToken });
+
+        await this.throwUniqueProductRegisteredByPeriod(dto);
+
         await this._repository.register(dto);
     }
 
     async update(token: string, dto: MenuUpdateDTO): Promise<void> {
         await this.findOne({ token });
+
         await this._productService.findOne({ token: dto.productToken });
+
+        await this.throwUniqueProductRegisteredByPeriod(dto);
+
         await this._repository.update(token, dto);
     }
 
     async remove(token: string): Promise<void> {
         await this.findOne({ token });
+
         await this._repository.remove(token);
+    }
+
+    private async throwUniqueProductRegisteredByPeriod(
+        dto: MenuParamDTO & { productToken: string; period: string },
+    ): Promise<void> {
+        const menu = await this._repository.findOne(dto);
+
+        if (
+            menu &&
+            menu.period === dto.period &&
+            menu.productToken === dto.productToken
+        ) {
+            throw new BadRequestError(
+                `There is already a menu registered with that product token: ${dto.productToken} and period: ${dto.period}`,
+            );
+        }
     }
 }

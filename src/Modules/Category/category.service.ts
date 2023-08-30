@@ -48,6 +48,14 @@ export class CategoryService {
         await this._repository.remove(token);
     }
 
+    public async throwCheckCategories(categoriesIDs: string[]) {
+        categoriesIDs.forEach(async (token) => {
+            if ((await this._repository.findOne({ token })) == null)
+                throw new BadRequestError(
+                    `This ${token} category is not registered in the database`,
+                );
+        });
+    }
     private async throwCategoryExists(dto: CategoryParamDTO): Promise<void> {
         if ((await this._repository.findOne(dto)) != null)
             throw new BadRequestError(

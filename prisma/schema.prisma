@@ -48,6 +48,6 @@ model Menu {
 }
 
 enum Period {
-    Nighttime
-    Daytime
+    nighttime
+    daytime
 }

@@ -93,12 +93,18 @@ describe('Unit - ProductService', () => {
             const result = undefined;
 
             it('should  update a product', async () => {
-                jest.spyOn(productRepository, 'findOne').mockResolvedValueOnce(
+                jest.spyOn(productService, 'findOne').mockResolvedValueOnce(
                     MockProduct,
                 );
+
+                jest.spyOn(productRepository, 'findOne').mockResolvedValueOnce(
+                    result,
+                );
+
                 jest.spyOn(productRepository, 'update').mockResolvedValueOnce(
                     result,
                 );
+
                 expect(
                     await productService.update(MockProduct.token, updateDTO),
                 ).toBe(result);
@@ -159,6 +165,20 @@ describe('Unit - ProductService', () => {
                 await expect(
                     productService.update('token', updateDTO),
                 ).rejects.toThrow(NotFoundError);
+            });
+
+            it('should return BadRequest if product already exists', async () => {
+                jest.spyOn(productService, 'findOne').mockResolvedValueOnce(
+                    MockProduct,
+                );
+
+                jest.spyOn(productRepository, 'findOne').mockResolvedValueOnce(
+                    MockProduct,
+                );
+
+                await expect(
+                    productService.update('token', updateDTO),
+                ).rejects.toThrow(BadRequestError);
             });
         });
 

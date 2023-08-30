@@ -18,6 +18,6 @@ export class CategoryResource {
     }
 
     static toArray(arr: CategoryDTO[]): CategoryResource[] {
-        return arr.length > 0 ? arr.map((c) => new CategoryResource(c)) : [];
+        return arr?.length > 0 ? arr.map((c) => new CategoryResource(c)) : [];
     }
 }

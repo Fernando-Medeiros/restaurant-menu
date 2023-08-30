@@ -23,9 +23,10 @@ export class ProductRepository {
         };
 
         return this._context.product.findMany({
-            take: +query.take,
-            skip: +query.skip,
+            take: Math.abs(+query.take),
+            skip: Math.abs(+query.skip),
             orderBy: orderBy[sort],
+            include: { categories: true },
         });
     }
 
@@ -36,7 +37,10 @@ export class ProductRepository {
 
         if (query == null) return null;
 
-        return this._context.product.findFirst({ where: query });
+        return this._context.product.findFirst({
+            where: query,
+            include: { categories: true },
+        });
     }
 
     async register(dto: ProductCreateDTO): Promise<void> {

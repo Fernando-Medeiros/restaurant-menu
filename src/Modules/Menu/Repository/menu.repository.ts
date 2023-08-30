@@ -31,11 +31,11 @@ export class MenuRepository {
     }
 
     async findOne(dto: MenuParamDTO): Promise<MenuDTO | null> {
-        const { token } = dto;
+        const { token, productToken } = dto;
 
         return this._context.menu.findFirst({
             where: {
-                OR: [token && { token }],
+                OR: [token && { token }, productToken && { productToken }],
             },
             include: { product: { include: { categories: true } } },
         });

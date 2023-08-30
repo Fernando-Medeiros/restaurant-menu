@@ -30,7 +30,7 @@ export class ProductService {
     }
 
     async register(dto: ProductCreateDTO): Promise<void> {
-        await this.throwProductExists({ ...dto });
+        await this.throwUniqueProductName({ ...dto });
 
         await this._categoryService.throwCheckCategories(dto.categoriesIDs);
 
@@ -40,7 +40,7 @@ export class ProductService {
     async update(token: string, dto: ProductUpdateDTO): Promise<void> {
         const product = await this.findOne({ token });
 
-        await this.throwProductExists({ ...dto });
+        await this.throwUniqueProductName({ ...dto });
 
         await this._categoryService.throwCheckCategories(dto.categoriesIDs);
 
@@ -58,7 +58,7 @@ export class ProductService {
         await this._repository.remove(token);
     }
 
-    private async throwProductExists(dto: ProductParamDTO): Promise<void> {
+    private async throwUniqueProductName(dto: ProductParamDTO): Promise<void> {
         if ((await this._repository.findOne(dto)) != null)
             throw new BadRequestError(
                 'There is already a product registered with that name',

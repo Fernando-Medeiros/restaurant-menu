@@ -16,5 +16,6 @@
     },
     "terminal.integrated.fontFamily": "monospace",
     "terminal.integrated.fontSize": 15,
-    "terminal.integrated.lineHeight": 1
+    "terminal.integrated.lineHeight": 1,
+    "cSpell.language": "en,pt-BR"
 }

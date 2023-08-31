@@ -1,0 +1,23 @@
+{
+    "recommendations": [
+        "streetsidesoftware.code-spell-checker",
+        "streetsidesoftware.code-spell-checker-portuguese-brazilian",
+        "editorconfig.editorconfig",
+        "usernamehw.errorlens",
+        "dbaeumer.vscode-eslint",
+        "kumar-harsh.graphql-for-vscode",
+        "eamodio.gitlens",
+        "oderwat.indent-rainbow",
+        "visualstudioexptteam.vscodeintellicode",
+        "orta.vscode-jest",
+        "firsttris.vscode-jest-runner",
+        "visualstudioexptteam.intellicode-api-usage-examples",
+        "yzhang.markdown-all-in-one",
+        "abhijoybasak.nestjs-files",
+        "christian-kohler.npm-intellisense",
+        "esbenp.prettier-vscode",
+        "prisma.prisma",
+        "prisma.prisma-insider",
+        "rangav.vscode-thunder-client"
+    ]
+}

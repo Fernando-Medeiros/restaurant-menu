@@ -1,8 +1,8 @@
 # postgres Dev
-DATABASE_URL="postgresql://postgres:root@postgres:5432/Restaurant?schema=public"
+# DATABASE_URL="postgresql://postgres:root@postgres:5432/Restaurant?schema=public"
 
 # mongo Dev
-DATABASE_URL="mongodb://root:12345@localhost:27017/Restaurant"
+# DATABASE_URL="mongodb://root:12345@localhost:27017/Restaurant"
 
 # mongo Pro - Atlas Example
 DATABASE_URL="mongodb+srv://{username}:{password}.{host}/{database}?retryWrites=true&w=majority"

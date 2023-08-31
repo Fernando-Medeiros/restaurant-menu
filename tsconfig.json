@@ -7,10 +7,10 @@
         "experimentalDecorators": true,
         "allowSyntheticDefaultImports": true,
         "resolveJsonModule": true,
-        "target": "es2017",
+        "target": "esnext",
         "sourceMap": true,
-        "outDir": "./dist",
-        "baseUrl": "./",
+        "outDir": "dist",
+        "baseUrl": ".",
         "incremental": true,
         "skipLibCheck": true,
         "strictNullChecks": false,
@@ -20,10 +20,13 @@
         "noFallthroughCasesInSwitch": false,
         "types": ["@types/jest"],
         "paths": {
-            "exceptions/*": ["src/Exceptions/*"],
-            "controllers/*": ["src/Controllers/*"],
-            "modules/*": ["src/Modules/*"],
-            "modulesHelpers/*": ["src/ModulesHelpers/*"],
+            "exceptions/*": ["src/Exceptions/*", "dist/src/Exceptions/*"],
+            "controllers/*": ["src/Controllers/*", "dist/src/Controllers/*"],
+            "modules/*": ["src/Modules/*", "dist/src/Modules/*"],
+            "modulesHelpers/*": [
+                "src/ModulesHelpers/*",
+                "dist/src/ModulesHelpers/*"
+            ],
             "mocks/*": ["test/mocks/*"]
         }
     }

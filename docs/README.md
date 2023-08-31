@@ -15,6 +15,7 @@
     -   [Instalação](#instalação)
     -   [Variáveis de ambiente](#variáveis-de-ambiente)
     -   [Docker](#docker)
+    -   [Prisma](#prisma)
     -   [Subir o servidor](#subir-o-servidor)
     -   [Testes](#testes)
     -   [Licença](#licença)
@@ -88,6 +89,14 @@ show dbs
 use Restaurant
 db.auth('root', '12345')
 show collections
+```
+
+## Prisma
+
+```sh
+npx prisma generate # gerar e ou atualizar o prisma.schema
+npx prisma db push # subir o schema para o banco de dados
+npx  prisma db pull # p/ atualizar o schema com o do banco de dados
 ```
 
 ## Subir o servidor

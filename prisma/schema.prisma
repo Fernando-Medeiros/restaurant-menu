@@ -5,9 +5,10 @@ generator client {
     provider = "prisma-client-js"
 }
 
-generator erd {
-    provider = "prisma-erd-generator"
-}
+// # Desmarque somente em ambiente de desenvolvimento para gerar o ERD/mongo 
+// generator erd {
+//     provider = "prisma-erd-generator"
+// }
 
 datasource db {
     provider = "mongodb"

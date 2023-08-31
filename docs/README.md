@@ -11,6 +11,8 @@
 
 > [Desafio.md](Desafio.md)
 
+A principal funcionalidade da aplicação está em cadastrar produtos organizados por categorias e adicioná-los em cardápios separados por período diurno e noturno. Isso inclui o gerenciamento deles através do CRUD, o tratamento de regras de negócio que é, por exemplo, não duplicar produtos em cardápios ou remover produtos que estejam adicionados em cardápios.
+
 -   [Restaurant-Backend-RestAPI](#restaurant-backend-restapi)
     -   [Dependências](#dependências)
     -   [Funcionalidades](#funcionalidades)

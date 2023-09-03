@@ -1,49 +1,53 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'modulesHelpers/Prisma/prisma.service';
-import { ProductDTO } from 'modules/Product/@namespace';
+import { ProductDTO, ProductFilterDTO } from 'modules/Product/@namespace';
 import {
-    CategoryUpdateDTO,
-    CategoryCreateDTO,
-    CategoryParamDTO,
-    CategoryQueryDTO,
     CategoryDTO,
+    CategoryQueryDTO,
+    CategoryParamDTO,
+    CategoryCreateDTO,
+    CategoryUpdateDTO,
 } from 'modules/Category/@namespace';
 
 @Injectable()
 export class CategoryRepository {
     constructor(private readonly _context: PrismaService) {}
 
-    async findProducts(dto: CategoryParamDTO): Promise<ProductDTO[] | []> {
-        let { token } = dto;
+    async findProducts(
+        query: ProductFilterDTO,
+    ): Promise<{ total: number; data: ProductDTO[] }> {
+        const token = query.token
+            ? query.token
+            : (await this.findOne({ name: query.name }))?.token;
 
-        if (!token && dto.name) {
-            token = (await this.findOne({ name: dto.name }))?.token;
-        }
-
-        return this._context.product.findMany({
-            where: { OR: [token && { categoriesIDs: { has: token } }] },
-            include: { categories: true },
-        });
+        const [total, data] = await Promise.all([
+            this._context.product.count({
+                where: { OR: [token && { categoriesIDs: { has: token } }] },
+            }),
+            this._context.product.findMany({
+                ...query.extractResolvedFilters(),
+                include: { categories: true },
+                where: { OR: [token && { categoriesIDs: { has: token } }] },
+            }),
+        ]);
+        return { total, data };
     }
 
-    async findMany(query: CategoryQueryDTO): Promise<CategoryDTO[] | []> {
-        const { order, sort } = query;
-
-        const orderBy = {
-            token: { token: order },
-            name: { name: order },
-            createdAt: { createdAt: order },
-        };
-
-        return this._context.category.findMany({
-            take: Math.abs(+query.take),
-            skip: Math.abs(+query.skip),
-            orderBy: orderBy[sort],
-        });
+    async findMany(
+        query: CategoryQueryDTO,
+    ): Promise<{ total: number; data: CategoryDTO[] }> {
+        const [total, data] = await Promise.all([
+            this._context.category.count(),
+            this._context.category.findMany({
+                ...query.extractResolvedFilters(),
+            }),
+        ]);
+        return { total, data };
     }
 
     async findOne(dto: CategoryParamDTO): Promise<CategoryDTO | null> {
         const { token, name } = dto;
+
         return this._context.category.findFirst({
             where: { OR: [token && { token }, name && { name }] },
         });

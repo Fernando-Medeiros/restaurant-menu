@@ -30,25 +30,37 @@ describe('Unit - MenuRepository', () => {
 
     describe('Success', () => {
         describe('findMany', () => {
-            const result = [MockMenu];
-
             it('should return an array of menus', async () => {
+                const result = { total: 1, data: [MockMenu] };
+
+                jest.spyOn(prismaService.menu, 'count').mockResolvedValueOnce(
+                    result.total,
+                );
+
                 jest.spyOn(
                     prismaService.menu,
                     'findMany',
-                ).mockResolvedValueOnce(result);
+                ).mockResolvedValueOnce(result.data);
 
-                expect(await menuRepository.findMany(queryDTO)).toBe(result);
+                expect(await menuRepository.findMany(queryDTO)).toStrictEqual(
+                    result,
+                );
             });
 
             it('should return an empty array', async () => {
+                const result = { total: 0, data: [] };
+
+                jest.spyOn(prismaService.menu, 'count').mockResolvedValueOnce(
+                    result.total,
+                );
+
                 jest.spyOn(
                     prismaService.menu,
                     'findMany',
-                ).mockResolvedValueOnce([]);
+                ).mockResolvedValueOnce(result.data);
 
                 expect(await menuRepository.findMany(queryDTO)).toStrictEqual(
-                    [],
+                    result,
                 );
             });
         });

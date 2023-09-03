@@ -10,11 +10,13 @@ import {
 } from 'modules/Category/@namespace';
 import { BadRequestError, NotFoundError } from 'exceptions/@namespace';
 import { MockCategory, MockProduct } from 'mocks/mockData';
+import { ProductFilterDTO } from 'modules/Product/@namespace';
 
 describe('Unit - CategoryService', () => {
     const createDTO: CategoryCreateDTO = { ...MockCategory };
     const updateDTO: CategoryUpdateDTO = { ...MockCategory };
     const paramDTO: CategoryParamDTO = { ...MockCategory };
+    const filterDTO = new ProductFilterDTO();
     const queryDTO = new CategoryQueryDTO();
 
     let categoryService: CategoryService;
@@ -33,51 +35,58 @@ describe('Unit - CategoryService', () => {
 
     describe('Success', () => {
         describe('findProducts', () => {
-            const result = [MockProduct];
-
             it('should return an array of products', async () => {
+                const result = { total: 1, data: [MockProduct] };
+
                 jest.spyOn(
                     categoryRepository,
                     'findProducts',
-                ).mockImplementation(async () => result);
+                ).mockResolvedValueOnce(result);
 
-                expect(await categoryService.findProducts(paramDTO)).toBe(
-                    result,
-                );
+                expect(
+                    await categoryService.findProducts(filterDTO),
+                ).toStrictEqual(result);
             });
 
             it('should return an empty array', async () => {
+                const result = { total: 0, data: [] };
+
                 jest.spyOn(
                     categoryRepository,
                     'findProducts',
-                ).mockImplementation(async () => []);
+                ).mockResolvedValueOnce(result);
 
                 expect(
-                    await categoryService.findProducts(paramDTO),
-                ).toStrictEqual([]);
+                    await categoryService.findProducts(filterDTO),
+                ).toStrictEqual(result);
             });
         });
 
         describe('findMany', () => {
-            const result = [MockCategory];
-
             it('should return an array of categories', async () => {
-                jest.spyOn(categoryRepository, 'findMany').mockImplementation(
-                    async () => result,
+                const result = { total: 1, data: [MockCategory] };
+
+                jest.spyOn(
+                    categoryRepository,
+                    'findMany',
+                ).mockResolvedValueOnce(result);
+                expect(await categoryService.findMany(queryDTO)).toStrictEqual(
+                    result,
                 );
-                expect(await categoryService.findMany(queryDTO)).toBe(result);
             });
 
             describe('findMany', () => {
                 it('should return an empty array', async () => {
+                    const result = { total: 0, data: [MockCategory] };
+
                     jest.spyOn(
                         categoryRepository,
                         'findMany',
-                    ).mockImplementation(async () => []);
+                    ).mockResolvedValueOnce(result);
 
                     expect(
                         await categoryService.findMany(queryDTO),
-                    ).toStrictEqual([]);
+                    ).toStrictEqual(result);
                 });
             });
 
@@ -88,7 +97,7 @@ describe('Unit - CategoryService', () => {
                     jest.spyOn(
                         categoryRepository,
                         'findOne',
-                    ).mockImplementation(async () => result);
+                    ).mockResolvedValueOnce(result);
 
                     expect(await categoryService.findOne(paramDTO)).toBe(
                         result,
@@ -103,12 +112,12 @@ describe('Unit - CategoryService', () => {
                     jest.spyOn(
                         categoryRepository,
                         'findOne',
-                    ).mockImplementation(async () => result);
+                    ).mockResolvedValueOnce(result);
 
                     jest.spyOn(
                         categoryRepository,
                         'register',
-                    ).mockImplementation(async () => result);
+                    ).mockResolvedValueOnce(result);
 
                     expect(await categoryService.register(createDTO)).toBe(
                         result,
@@ -123,11 +132,12 @@ describe('Unit - CategoryService', () => {
                     jest.spyOn(
                         categoryRepository,
                         'findOne',
-                    ).mockImplementation(async () => MockCategory);
+                    ).mockResolvedValueOnce(MockCategory);
 
-                    jest.spyOn(categoryRepository, 'update').mockImplementation(
-                        async () => result,
-                    );
+                    jest.spyOn(
+                        categoryRepository,
+                        'update',
+                    ).mockResolvedValueOnce(result);
 
                     expect(await categoryService.update('111', updateDTO)).toBe(
                         result,
@@ -142,11 +152,12 @@ describe('Unit - CategoryService', () => {
                     jest.spyOn(
                         categoryRepository,
                         'findOne',
-                    ).mockImplementation(async () => MockCategory);
+                    ).mockResolvedValueOnce(MockCategory);
 
-                    jest.spyOn(categoryRepository, 'remove').mockImplementation(
-                        async () => result,
-                    );
+                    jest.spyOn(
+                        categoryRepository,
+                        'remove',
+                    ).mockResolvedValueOnce(result);
 
                     expect(await categoryService.remove('111')).toBe(result);
                 });
@@ -161,7 +172,7 @@ describe('Unit - CategoryService', () => {
                     jest.spyOn(
                         categoryRepository,
                         'findOne',
-                    ).mockImplementation(async () => result);
+                    ).mockResolvedValueOnce(result);
 
                     await expect(
                         categoryService.findOne(paramDTO),
@@ -181,7 +192,7 @@ describe('Unit - CategoryService', () => {
                     jest.spyOn(
                         categoryRepository,
                         'register',
-                    ).mockImplementation(async () => result);
+                    ).mockResolvedValueOnce(result);
 
                     await expect(
                         categoryService.register(createDTO),
@@ -196,11 +207,12 @@ describe('Unit - CategoryService', () => {
                     jest.spyOn(
                         categoryRepository,
                         'findOne',
-                    ).mockImplementation(async () => result);
+                    ).mockResolvedValueOnce(result);
 
-                    jest.spyOn(categoryRepository, 'update').mockImplementation(
-                        async () => result,
-                    );
+                    jest.spyOn(
+                        categoryRepository,
+                        'update',
+                    ).mockResolvedValueOnce(result);
 
                     await expect(
                         categoryService.update(MockCategory.token, updateDTO),
@@ -215,11 +227,12 @@ describe('Unit - CategoryService', () => {
                     jest.spyOn(
                         categoryRepository,
                         'findOne',
-                    ).mockImplementation(async () => result);
+                    ).mockResolvedValueOnce(result);
 
-                    jest.spyOn(categoryRepository, 'remove').mockImplementation(
-                        async () => result,
-                    );
+                    jest.spyOn(
+                        categoryRepository,
+                        'remove',
+                    ).mockResolvedValueOnce(result);
 
                     await expect(
                         categoryService.remove(MockCategory.token),

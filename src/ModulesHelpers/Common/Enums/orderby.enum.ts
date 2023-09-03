@@ -1,4 +1,4 @@
-export enum OrderBy {
+export enum EOrderBy {
     'asc' = 'asc',
     'desc' = 'desc',
 }

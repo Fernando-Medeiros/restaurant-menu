@@ -17,11 +17,16 @@ export class MenuService {
         private readonly _productService: ProductService,
     ) {}
 
-    async findManyByCurrentPeriod(): Promise<MenuDTO[] | []> {
-        return this._repository.findManyByCurrentPeriod();
+    async findManyByCurrentPeriod(query: MenuQueryDTO): Promise<{
+        total: number;
+        data: MenuDTO[];
+    }> {
+        return this._repository.findManyByCurrentPeriod(query);
     }
 
-    async findMany(query: MenuQueryDTO): Promise<MenuDTO[] | []> {
+    async findMany(
+        query: MenuQueryDTO,
+    ): Promise<{ total: number; data: MenuDTO[] }> {
         return this._repository.findMany(query);
     }
 

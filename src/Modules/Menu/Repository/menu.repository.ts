@@ -1,49 +1,45 @@
 import { Injectable } from '@nestjs/common';
+import { Period } from '@prisma/client';
 import { PrismaService } from 'modulesHelpers/Prisma/prisma.service';
 import {
-    MenuCreateDTO,
     MenuDTO,
     MenuParamDTO,
     MenuQueryDTO,
+    MenuCreateDTO,
     MenuUpdateDTO,
 } from 'modules/Menu/@namespace';
-import { Period } from '@prisma/client';
 
 @Injectable()
 export class MenuRepository {
     constructor(private readonly _context: PrismaService) {}
 
-    async findManyByCurrentPeriod(): Promise<MenuDTO[] | []> {
-        const hour: number = +new Date().toLocaleTimeString('pt-BR', {
-            hourCycle: 'h24',
-            hour: '2-digit',
-        });
+    async findManyByCurrentPeriod(
+        query: MenuQueryDTO,
+    ): Promise<{ total: number; data: MenuDTO[] }> {
+        const period: Period = this.resolvePeriod();
 
-        const period =
-            hour > 6 && hour < 18 ? Period.daytime : Period.nighttime;
-
-        return this._context.menu.findMany({
-            where: { period },
-            include: { product: { include: { categories: true } } },
-        });
+        const [total, data] = await Promise.all([
+            this._context.menu.count({ where: { period } }),
+            this._context.menu.findMany({
+                ...query.extractResolvedFilters(),
+                where: { period },
+                include: { product: { include: { categories: true } } },
+            }),
+        ]);
+        return { total, data };
     }
 
-    async findMany(query: MenuQueryDTO): Promise<MenuDTO[] | []> {
-        const { order, sort } = query;
-
-        const orderBy = {
-            token: { token: order },
-            period: { period: order },
-            productToken: { productToken: order },
-            createdAt: { createdAt: order },
-        }[sort];
-
-        return this._context.menu.findMany({
-            take: Math.abs(+query.take),
-            skip: Math.abs(+query.skip),
-            orderBy,
-            include: { product: { include: { categories: true } } },
-        });
+    async findMany(
+        query: MenuQueryDTO,
+    ): Promise<{ total: number; data: MenuDTO[] }> {
+        const [total, data] = await Promise.all([
+            this._context.menu.count(),
+            this._context.menu.findMany({
+                ...query.extractResolvedFilters(),
+                include: { product: { include: { categories: true } } },
+            }),
+        ]);
+        return { total, data };
     }
 
     async findOne(dto: MenuParamDTO): Promise<MenuDTO | null> {
@@ -67,5 +63,15 @@ export class MenuRepository {
 
     async remove(token: string): Promise<void> {
         await this._context.menu.delete({ where: { token } });
+    }
+
+    private resolvePeriod(): Period {
+        const hour = new Date(
+            new Date().toLocaleString('en-US', {
+                timeZone: 'America/Sao_Paulo',
+            }),
+        ).getHours();
+
+        return hour >= 6 && hour < 18 ? Period.daytime : Period.nighttime;
     }
 }

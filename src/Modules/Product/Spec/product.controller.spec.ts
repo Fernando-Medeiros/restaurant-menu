@@ -15,6 +15,7 @@ import {
     CategoryRepository,
     CategoryService,
 } from 'modules/Category/@namespace';
+import { PaginateProduct } from 'modulesHelpers/Pagination/@namespace';
 
 describe('Unit - ProductController', () => {
     const createDTO: ProductCreateDTO = { ...MockProduct };
@@ -42,26 +43,41 @@ describe('Unit - ProductController', () => {
     });
 
     describe('Success', () => {
-        describe('findMany', () => {
-            const result = [MockProduct];
-            const output = [MockProductResource];
+        const request = { url: 'api/v1/' };
 
+        describe('findMany', () => {
             it('should return an array of products resources', async () => {
+                const result = { total: 1, data: [MockProduct] };
+
                 jest.spyOn(productService, 'findMany').mockResolvedValueOnce(
                     result,
                 );
                 expect(
-                    await productController.findMany(queryDTO),
-                ).toStrictEqual(output);
+                    await productController.findMany(request, queryDTO),
+                ).toStrictEqual(
+                    new PaginateProduct({
+                        ...result,
+                        ...request,
+                        ...queryDTO,
+                    }),
+                );
             });
 
             it('should return an empty array', async () => {
+                const result = { total: 0, data: [] };
+
                 jest.spyOn(productService, 'findMany').mockResolvedValueOnce(
-                    [],
+                    result,
                 );
                 expect(
-                    await productController.findMany(queryDTO),
-                ).toStrictEqual([]);
+                    await productController.findMany(request, queryDTO),
+                ).toStrictEqual(
+                    new PaginateProduct({
+                        ...result,
+                        ...request,
+                        ...queryDTO,
+                    }),
+                );
             });
         });
 

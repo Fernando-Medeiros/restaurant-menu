@@ -7,25 +7,27 @@ import {
     Param,
     Post,
     Put,
+    Request,
     Query,
 } from '@nestjs/common';
 import {
-    ApiBadRequestResponse,
-    ApiCreatedResponse,
-    ApiNoContentResponse,
-    ApiNotFoundResponse,
-    ApiOkResponse,
-    ApiOperation,
     ApiTags,
+    ApiOperation,
+    ApiOkResponse,
+    ApiCreatedResponse,
+    ApiNotFoundResponse,
+    ApiNoContentResponse,
+    ApiBadRequestResponse,
 } from '@nestjs/swagger';
 import {
-    MenuCreateDTO,
+    MenuService,
+    MenuResource,
     MenuParamDTO,
     MenuQueryDTO,
-    MenuResource,
-    MenuService,
+    MenuCreateDTO,
     MenuUpdateDTO,
 } from 'modules/Menu/@namespace';
+import { PaginateMenu } from 'modulesHelpers/Pagination/@namespace';
 
 @ApiTags('Menu Controller')
 @Controller('api/v1/menus')
@@ -34,18 +36,31 @@ export class MenuController {
 
     @Get('period')
     @ApiOperation({ summary: 'get records from menu in current period' })
-    @ApiOkResponse({ isArray: true, type: MenuResource })
-    async findManyByCurrentPeriod() {
-        const menus = await this._service.findManyByCurrentPeriod();
-        return MenuResource.toArray(menus);
+    @ApiOkResponse({ type: PaginateMenu })
+    async findManyByCurrentPeriod(
+        @Request() request: object,
+        @Query() query: MenuQueryDTO,
+    ) {
+        const menus = await this._service.findManyByCurrentPeriod(query);
+
+        return new PaginateMenu({
+            ...menus,
+            ...request,
+            ...query,
+        });
     }
 
     @Get('find-many')
     @ApiOperation({ summary: 'get many records from the menu' })
-    @ApiOkResponse({ isArray: true, type: MenuResource })
-    async findMany(@Query() query: MenuQueryDTO) {
+    @ApiOkResponse({ type: MenuResource })
+    async findMany(@Request() request: object, @Query() query: MenuQueryDTO) {
         const menus = await this._service.findMany(query);
-        return MenuResource.toArray(menus);
+
+        return new PaginateMenu({
+            ...menus,
+            ...request,
+            ...query,
+        });
     }
 
     @Get('find-one')
@@ -55,8 +70,8 @@ export class MenuController {
     @ApiNotFoundResponse({ description: 'not found' })
     async findOne(@Query() query: MenuParamDTO) {
         const menu = await this._service.findOne(query);
-        const resource = new MenuResource(menu);
-        return resource;
+
+        return new MenuResource(menu);
     }
 
     @Post()

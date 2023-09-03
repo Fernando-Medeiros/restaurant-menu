@@ -7,25 +7,27 @@ import {
     Patch,
     Post,
     Param,
+    Request,
     Query,
 } from '@nestjs/common';
 import {
-    ApiBadRequestResponse,
-    ApiCreatedResponse,
-    ApiNoContentResponse,
-    ApiNotFoundResponse,
-    ApiOkResponse,
-    ApiOperation,
     ApiTags,
+    ApiOperation,
+    ApiOkResponse,
+    ApiCreatedResponse,
+    ApiNotFoundResponse,
+    ApiNoContentResponse,
+    ApiBadRequestResponse,
 } from '@nestjs/swagger';
 import {
-    ProductCreateDTO,
-    ProductParamDTO,
-    ProductQueryDTO,
-    ProductResource,
     ProductService,
+    ProductResource,
+    ProductQueryDTO,
+    ProductParamDTO,
+    ProductCreateDTO,
     ProductUpdateDTO,
 } from 'modules/Product/@namespace';
+import { PaginateProduct } from 'modulesHelpers/Pagination/@namespace';
 
 @ApiTags('Product Controller')
 @Controller('api/v1/products')
@@ -34,11 +36,18 @@ export class ProductController {
 
     @Get('find-many')
     @ApiOperation({ summary: 'get products' })
-    @ApiOkResponse({ isArray: true, type: ProductResource })
-    async findMany(@Query() query: ProductQueryDTO) {
-        const product = await this._service.findMany(query);
+    @ApiOkResponse({ type: PaginateProduct })
+    async findMany(
+        @Request() request: object,
+        @Query() query: ProductQueryDTO,
+    ) {
+        const products = await this._service.findMany(query);
 
-        return ProductResource.toArray(product);
+        return new PaginateProduct({
+            ...products,
+            ...request,
+            ...query,
+        });
     }
 
     @Get('find-one')
@@ -49,9 +58,7 @@ export class ProductController {
     async findOne(@Query() query: ProductParamDTO) {
         const product = await this._service.findOne(query);
 
-        const resource = new ProductResource(product);
-
-        return resource;
+        return new ProductResource(product);
     }
 
     @Post()

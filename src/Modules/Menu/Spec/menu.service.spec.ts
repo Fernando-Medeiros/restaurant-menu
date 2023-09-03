@@ -47,9 +47,9 @@ describe('Unit - MenuService', () => {
 
     describe('Success', () => {
         describe('findMany', () => {
-            const result = [MockMenu];
-
             it('should return an array of menus', async () => {
+                const result = { total: 1, data: [MockMenu] };
+
                 jest.spyOn(menuRepository, 'findMany').mockResolvedValueOnce(
                     result,
                 );
@@ -58,10 +58,14 @@ describe('Unit - MenuService', () => {
             });
 
             it('should return an empty array', async () => {
+                const result = { total: 0, data: [] };
+
                 jest.spyOn(menuRepository, 'findMany').mockResolvedValueOnce(
-                    [],
+                    result,
                 );
-                expect(await menuService.findMany(queryDTO)).toStrictEqual([]);
+                expect(await menuService.findMany(queryDTO)).toStrictEqual(
+                    result,
+                );
             });
         });
 
@@ -126,7 +130,7 @@ describe('Unit - MenuService', () => {
 
     describe('Exception', () => {
         describe('findOne', () => {
-            const result = null;
+            const result = undefined;
 
             it('should return NotFound if menu nothing exists', async () => {
                 jest.spyOn(menuRepository, 'findOne').mockResolvedValueOnce(
@@ -155,11 +159,9 @@ describe('Unit - MenuService', () => {
         });
 
         describe('update', () => {
-            const result = undefined;
-
             it('should return NotFound if menu nothing exists', async () => {
                 jest.spyOn(menuRepository, 'findOne').mockResolvedValueOnce(
-                    result,
+                    undefined,
                 );
 
                 await expect(
@@ -184,15 +186,11 @@ describe('Unit - MenuService', () => {
         });
 
         describe('remove', () => {
-            const result = undefined;
-
             it('should return NotFound if menu nothing exists', async () => {
                 jest.spyOn(menuRepository, 'findOne').mockResolvedValueOnce(
-                    result,
+                    undefined,
                 );
-                jest.spyOn(menuRepository, 'remove').mockResolvedValueOnce(
-                    result,
-                );
+
                 await expect(menuService.remove('token')).rejects.toThrow(
                     NotFoundError,
                 );

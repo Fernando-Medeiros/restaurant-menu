@@ -8,26 +8,30 @@ import {
     Patch,
     Post,
     Query,
+    Request,
 } from '@nestjs/common';
 import {
-    ApiBadRequestResponse,
-    ApiCreatedResponse,
-    ApiNoContentResponse,
-    ApiNotFoundResponse,
-    ApiOkResponse,
-    ApiOperation,
     ApiTags,
+    ApiOperation,
+    ApiOkResponse,
+    ApiCreatedResponse,
+    ApiNotFoundResponse,
+    ApiNoContentResponse,
+    ApiBadRequestResponse,
 } from '@nestjs/swagger';
-
 import {
-    CategoryCreateDTO,
+    CategoryService,
+    CategoryResource,
     CategoryParamDTO,
     CategoryQueryDTO,
-    CategoryResource,
-    CategoryService,
+    CategoryCreateDTO,
     CategoryUpdateDTO,
 } from 'modules/Category/@namespace';
-import { ProductResource } from 'modules/Product/@namespace';
+import {
+    PaginateProduct,
+    PaginateCategory,
+} from 'modulesHelpers/Pagination/@namespace';
+import { ProductFilterDTO } from 'modules/Product/@namespace';
 
 @ApiTags('Category Controller')
 @Controller('api/v1/categories')
@@ -36,20 +40,34 @@ export class CategoryController {
 
     @Get('products')
     @ApiOperation({ summary: 'get products by category' })
-    @ApiOkResponse({ isArray: true, type: ProductResource })
-    async findProducts(@Query() query: CategoryParamDTO) {
+    @ApiOkResponse({ type: PaginateProduct })
+    async findProducts(
+        @Request() request: object,
+        @Query() query: ProductFilterDTO,
+    ) {
         const products = await this._service.findProducts(query);
 
-        return ProductResource.toArray(products);
+        return new PaginateProduct({
+            ...products,
+            ...request,
+            ...query,
+        });
     }
 
     @Get('find-many')
     @ApiOperation({ summary: 'get categories' })
-    @ApiOkResponse({ isArray: true, type: CategoryResource })
-    async findMany(@Query() query: CategoryQueryDTO) {
+    @ApiOkResponse({ type: PaginateCategory })
+    async findMany(
+        @Request() request: object,
+        @Query() query: CategoryQueryDTO,
+    ) {
         const categories = await this._service.findMany(query);
 
-        return CategoryResource.toArray(categories);
+        return new PaginateCategory({
+            ...categories,
+            ...request,
+            ...query,
+        });
     }
 
     @Get('find-one')
@@ -60,9 +78,7 @@ export class CategoryController {
     async findOne(@Query() query: CategoryParamDTO) {
         const category = await this._service.findOne(query);
 
-        const resource = new CategoryResource(category);
-
-        return resource;
+        return new CategoryResource(category);
     }
 
     @Post()

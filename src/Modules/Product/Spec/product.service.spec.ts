@@ -42,22 +42,26 @@ describe('Unit - ProductService', () => {
 
     describe('Success', () => {
         describe('findMany', () => {
-            const result = [MockProduct];
+            const result = { total: 1, data: [MockProduct] };
 
-            it('should return an array of products', async () => {
+            it('should return an paginate of products', async () => {
                 jest.spyOn(productRepository, 'findMany').mockResolvedValueOnce(
                     result,
                 );
 
-                expect(await productService.findMany(queryDTO)).toBe(result);
+                expect(await productService.findMany(queryDTO)).toStrictEqual(
+                    result,
+                );
             });
 
-            it('should return an empty array', async () => {
+            it('should return an empty paginate', async () => {
+                const result = { total: 0, data: [] };
+
                 jest.spyOn(productRepository, 'findMany').mockResolvedValueOnce(
-                    [],
+                    result,
                 );
                 expect(await productService.findMany(queryDTO)).toStrictEqual(
-                    [],
+                    result,
                 );
             });
         });

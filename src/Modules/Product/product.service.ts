@@ -17,11 +17,13 @@ export class ProductService {
         private readonly _categoryService: CategoryService,
     ) {}
 
-    async findMany(query: ProductQueryDTO): Promise<ProductDTO[] | []> {
+    async findMany(
+        query: ProductQueryDTO,
+    ): Promise<{ total: number; data: ProductDTO[] }> {
         return this._repository.findMany(query);
     }
 
-    async findOne(dto: ProductParamDTO): Promise<ProductDTO | null> {
+    async findOne(dto: ProductParamDTO): Promise<ProductDTO> {
         const product = await this._repository.findOne(dto);
 
         if (product == null) throw new NotFoundError('Product Not Found');
@@ -32,7 +34,7 @@ export class ProductService {
     async register(dto: ProductCreateDTO): Promise<void> {
         await this.throwUniqueProductName({ ...dto });
 
-        await this._categoryService.throwCheckCategories(dto.categoriesIDs);
+        await this._categoryService.throwAvailableCategories(dto.categoriesIDs);
 
         await this._repository.register(dto);
     }
@@ -42,7 +44,7 @@ export class ProductService {
 
         await this.throwUniqueProductName({ ...dto });
 
-        await this._categoryService.throwCheckCategories(dto.categoriesIDs);
+        await this._categoryService.throwAvailableCategories(dto.categoriesIDs);
 
         await this._repository.update(token, {
             ...dto,

@@ -30,18 +30,32 @@ describe('Unit - ProductRepository', () => {
 
     describe('Success', () => {
         describe('findMany', () => {
-            const result = [MockProduct];
-
             it('should return an array of products', async () => {
+                const result = { total: 1, data: [MockProduct] };
+
+                jest.spyOn(
+                    prismaService.product,
+                    'count',
+                ).mockResolvedValueOnce(result.total);
+
                 jest.spyOn(
                     prismaService.product,
                     'findMany',
-                ).mockResolvedValueOnce(result);
+                ).mockResolvedValueOnce(result.data);
 
-                expect(await productRepository.findMany(queryDTO)).toBe(result);
+                expect(
+                    await productRepository.findMany(queryDTO),
+                ).toStrictEqual(result);
             });
 
             it('should return an empty array', async () => {
+                const result = { total: 0, data: [] };
+
+                jest.spyOn(
+                    prismaService.product,
+                    'count',
+                ).mockResolvedValueOnce(result.total);
+
                 jest.spyOn(
                     prismaService.product,
                     'findMany',
@@ -49,7 +63,7 @@ describe('Unit - ProductRepository', () => {
 
                 expect(
                     await productRepository.findMany(queryDTO),
-                ).toStrictEqual([]);
+                ).toStrictEqual(result);
             });
         });
 

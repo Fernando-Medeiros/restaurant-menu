@@ -9,5 +9,6 @@ export class MenuParamDTO {
     token?: string;
 
     @ApiHideProperty()
+    @IsOptional()
     productToken?: string;
 }

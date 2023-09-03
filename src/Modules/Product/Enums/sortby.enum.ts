@@ -1,4 +1,4 @@
-export enum SortBy {
+export enum ESortBy {
     'token' = 'token',
     'name' = 'name',
     'price' = 'price',

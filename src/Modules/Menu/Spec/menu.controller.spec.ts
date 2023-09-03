@@ -14,6 +14,7 @@ import {
     CategoryService,
 } from 'modules/Category/@namespace';
 import { ProductRepository, ProductService } from 'modules/Product/@namespace';
+import { PaginateMenu } from 'modulesHelpers/Pagination/@namespace';
 import { MockMenu, MockMenuResource } from 'mocks/mockData';
 import { NotFoundError } from 'exceptions/@namespace';
 
@@ -45,23 +46,42 @@ describe('Unit - MenuController', () => {
     });
 
     describe('Success', () => {
-        describe('findMany', () => {
-            const result = [MockMenu];
-            const output = [MockMenuResource];
+        const request = { url: 'api/v1/menus' };
 
+        describe('findMany', () => {
             it('should return an array of menus resources', async () => {
+                const result = { total: 1, data: [MockMenu] };
+
                 jest.spyOn(menuService, 'findMany').mockResolvedValueOnce(
                     result,
                 );
-                expect(await menuController.findMany(queryDTO)).toStrictEqual(
-                    output,
+
+                expect(
+                    await menuController.findMany(request, queryDTO),
+                ).toStrictEqual(
+                    new PaginateMenu({
+                        ...result,
+                        ...request,
+                        ...queryDTO,
+                    }),
                 );
             });
 
             it('should return an empty array', async () => {
-                jest.spyOn(menuService, 'findMany').mockResolvedValueOnce([]);
-                expect(await menuController.findMany(queryDTO)).toStrictEqual(
-                    [],
+                const result = { total: 0, data: [] };
+
+                jest.spyOn(menuService, 'findMany').mockResolvedValueOnce(
+                    result,
+                );
+
+                expect(
+                    await menuController.findMany(request, queryDTO),
+                ).toStrictEqual(
+                    new PaginateMenu({
+                        ...result,
+                        ...request,
+                        ...queryDTO,
+                    }),
                 );
             });
         });

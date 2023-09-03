@@ -30,7 +30,7 @@ A principal funcionalidade da aplicação está em cadastrar produtos organizado
 
 | Ferramenta / Pacote |    Versão     | Opcional |
 | :------------------ | :-----------: | :------: |
-| Docker Desktop      |      ^4       |    x     |
+| Docker Desktop      |      ^4       |          |
 | Docker Compose      |      ^2       |    x     |
 | VsCode              |     ^1.8      |    x     |
 | Node                |      ^18      |          |
@@ -49,7 +49,7 @@ A principal funcionalidade da aplicação está em cadastrar produtos organizado
 Instale as dependências do [package.json](../package.json)
 
 ```sh
-yarn install
+yarn install && yarn build
 ```
 
 Copie o template do env para .env
@@ -60,55 +60,50 @@ cp env-example .env
 
 ## Variáveis de ambiente
 
-> **UTILIZE O MONGO ATLAS**
-
 ```sh
 # Utilize esse esquema para conectar com o mongo ATLAS
 DATABASE_URL="mongodb+srv://{username}:{password}.{host}/{database}?retryWrites=true&w=majority"
 
 # Ou esse para conectar com o container do docker mongo
-DATABASE_URL="mongodb://root:12345@localhost:27017/Restaurant"
+DATABASE_URL="mongodb://root:root@localhost:27017/restaurant?authSource=admin"
 ```
 
 ## Docker
 
-> **A Imagem do bitnami/mongodb com a configuração atual possui conflitos com o prisma e será resolvido em breve.**
-
--   [docker-compose](../docker/mongo/docker-compose.yml)
--   [bitnami/mongodb:latest](https://hub.docker.com/r/bitnami/mongodb)
+```sh
+# Altere as permissões do script  para subir o mongo_replica
+chmod +x docker/mongo/mongo-replica.sh
+```
 
 ```sh
-# Para subir o container
-cd docker/mongo
-docker compose up -d # p/ iniciar o container
-docker compose stop # p/ parar o container
+# Para executar o script e subir o container
+docker/mongo/mongo-replica.sh
 ```
 
 ```sh
 # Para acessar o terminal do mongo
-cd docker/mongo
-docker compose exec mongo mongosh
+docker exec -it mongo mongosh
 
+#  Use: yarn prisma studio para visualizar as coleções
 show dbs
-use Restaurant
-db.auth('root', '12345')
+use restaurant
+db.auth('root', 'root')
 show collections
 ```
 
 ## Prisma
 
 ```sh
-npx prisma generate # gerar e ou atualizar o prisma.schema
-npx prisma db push # subir o schema para o banco de dados
-npx  prisma db pull # p/ atualizar o schema com o do banco de dados
+yarn prisma generate # atualizar o prisma.schema
+yarn prisma db push # subir o schema para o banco de dados
+yarn prisma studio # visualizar os dados
 ```
 
 ## Subir o servidor
 
 ```sh
-yarn run start # development
-yarn run start:dev # watch mode
-yarn run start:prod # production mode
+yarn run start # production  - [node dist/src/main]
+yarn run start:dev # watch  - [nest start --watch]
 ```
 
 ## Testes

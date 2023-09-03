@@ -9,11 +9,13 @@ import {
     CategoryUpdateDTO,
 } from 'modules/Category/@namespace';
 import { MockCategory, MockProduct } from 'mocks/mockData';
+import { ProductFilterDTO } from 'modules/Product/@namespace';
 
 describe('Unit - CategoryRepository', () => {
     const createDTO: CategoryCreateDTO = { ...MockCategory };
     const updateDTO: CategoryUpdateDTO = { ...MockCategory };
     const paramDTO: CategoryParamDTO = { ...MockCategory };
+    const filterDTO = new ProductFilterDTO();
     const queryDTO = new CategoryQueryDTO();
 
     let prismaService: PrismaService;
@@ -31,29 +33,55 @@ describe('Unit - CategoryRepository', () => {
     });
 
     describe('findProducts', () => {
-        const result = [MockProduct];
-
         it('should return an array of products', async () => {
-            jest.spyOn(prismaService.product, 'findMany').mockResolvedValueOnce(
-                result,
+            const result = { total: 1, data: [MockProduct] };
+
+            jest.spyOn(prismaService.product, 'count').mockResolvedValueOnce(
+                result.total,
             );
 
-            expect(await categoryRepository.findProducts(paramDTO)).toBe(
-                result,
+            jest.spyOn(prismaService.product, 'findMany').mockResolvedValueOnce(
+                result.data,
             );
+
+            expect(
+                await categoryRepository.findProducts(filterDTO),
+            ).toStrictEqual(result);
+        });
+
+        it('should return an empty array', async () => {
+            const result = { total: 0, data: [] };
+
+            jest.spyOn(prismaService.product, 'count').mockResolvedValueOnce(
+                result.total,
+            );
+
+            jest.spyOn(prismaService.product, 'findMany').mockResolvedValueOnce(
+                result.data,
+            );
+
+            expect(
+                await categoryRepository.findProducts(filterDTO),
+            ).toStrictEqual(result);
         });
     });
 
     describe('findMany', () => {
-        const result = [MockCategory];
-
         it('should return an array of categories', async () => {
+            const result = { total: 1, data: [MockCategory] };
+
+            jest.spyOn(prismaService.category, 'count').mockResolvedValueOnce(
+                result.total,
+            );
+
             jest.spyOn(
                 prismaService.category,
                 'findMany',
-            ).mockResolvedValueOnce(result);
+            ).mockResolvedValueOnce(result.data);
 
-            expect(await categoryRepository.findMany(queryDTO)).toBe(result);
+            expect(await categoryRepository.findMany(queryDTO)).toStrictEqual(
+                result,
+            );
         });
     });
 

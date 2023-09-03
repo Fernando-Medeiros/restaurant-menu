@@ -14,13 +14,18 @@ import {
     MockCategory,
     MockCategoryResource,
     MockProduct,
-    MockProductResource,
 } from 'mocks/mockData';
+import { ProductFilterDTO } from 'modules/Product/@namespace';
+import {
+    PaginateCategory,
+    PaginateProduct,
+} from 'modulesHelpers/Pagination/@namespace';
 
 describe('Unit - CategoryController', () => {
     const createDTO: CategoryCreateDTO = { ...MockCategory };
     const updateDTO: CategoryUpdateDTO = { ...MockCategory };
     const paramDTO: CategoryParamDTO = { ...MockCategory };
+    const filterDTO = new ProductFilterDTO();
     const queryDTO = new CategoryQueryDTO();
 
     let categoryService: CategoryService;
@@ -38,137 +43,177 @@ describe('Unit - CategoryController', () => {
     });
 
     describe('Success', () => {
-        describe('findProducts', () => {
-            const result = [MockProduct];
-            const output = [MockProductResource];
+        const request = { url: 'api/v1/' };
 
-            it('should return an array of products resources', async () => {
-                jest.spyOn(categoryService, 'findProducts').mockImplementation(
-                    async () => result,
-                );
+        describe('findProducts', () => {
+            it('should return an pagination of products resources', async () => {
+                const result = { total: 1, data: [MockProduct] };
+
+                jest.spyOn(
+                    categoryService,
+                    'findProducts',
+                ).mockResolvedValueOnce(result);
+
                 expect(
-                    await categoryController.findProducts(paramDTO),
-                ).toStrictEqual(output);
+                    await categoryController.findProducts(request, filterDTO),
+                ).toStrictEqual(
+                    new PaginateProduct({
+                        ...result,
+                        ...request,
+                        ...filterDTO,
+                    }),
+                );
             });
 
-            it('should return an empty array', async () => {
-                jest.spyOn(categoryService, 'findProducts').mockImplementation(
-                    async () => [],
-                );
+            it('should return an empty pagination', async () => {
+                const result = { total: 0, data: [] };
+
+                jest.spyOn(
+                    categoryService,
+                    'findProducts',
+                ).mockResolvedValueOnce(result);
+
                 expect(
-                    await categoryController.findProducts(paramDTO),
-                ).toStrictEqual([]);
+                    await categoryController.findProducts(request, filterDTO),
+                ).toStrictEqual(
+                    new PaginateProduct({
+                        ...result,
+                        ...request,
+                        ...filterDTO,
+                    }),
+                );
             });
         });
 
         describe('findMany', () => {
-            const result = [MockCategory];
-            const output = [MockCategoryResource];
+            it('should return an pagination of categories resources', async () => {
+                const result = { total: 1, data: [MockCategory] };
 
-            it('should return an array of categories resources', async () => {
-                jest.spyOn(categoryService, 'findMany').mockImplementation(
-                    async () => result,
-                );
-                expect(
-                    await categoryController.findMany(queryDTO),
-                ).toStrictEqual(output);
-            });
-
-            it('should return an empty array', async () => {
-                jest.spyOn(categoryService, 'findMany').mockImplementation(
-                    async () => [],
-                );
-                expect(
-                    await categoryController.findMany(queryDTO),
-                ).toStrictEqual([]);
-            });
-        });
-
-        describe('findOne', () => {
-            const result = MockCategory;
-            const output = MockCategoryResource;
-
-            it('should return a category resource', async () => {
-                jest.spyOn(categoryService, 'findOne').mockImplementation(
-                    async () => result,
-                );
-                expect(
-                    await categoryController.findOne(paramDTO),
-                ).toStrictEqual(output);
-            });
-        });
-
-        describe('register', () => {
-            const result = undefined;
-
-            it('should register a category ', async () => {
-                jest.spyOn(categoryService, 'register').mockImplementation(
-                    () => result,
-                );
-                expect(
-                    await categoryController.register(createDTO),
-                ).toStrictEqual(result);
-            });
-        });
-
-        describe('update', () => {
-            const result = undefined;
-
-            it('should update a category ', async () => {
-                jest.spyOn(categoryService, 'update').mockImplementation(
-                    () => result,
-                );
-                expect(
-                    await categoryController.update('token', updateDTO),
-                ).toStrictEqual(result);
-            });
-        });
-
-        describe('remove', () => {
-            const result = undefined;
-
-            it('should remove a category ', async () => {
-                jest.spyOn(categoryService, 'remove').mockImplementation(
-                    () => result,
-                );
-                expect(await categoryController.remove('token')).toStrictEqual(
+                jest.spyOn(categoryService, 'findMany').mockResolvedValueOnce(
                     result,
                 );
+                expect(
+                    await categoryController.findMany(request, queryDTO),
+                ).toStrictEqual(
+                    new PaginateCategory({
+                        ...result,
+                        ...request,
+                        ...queryDTO,
+                    }),
+                );
+            });
+
+            it('should return an empty pagination', async () => {
+                const result = { total: 0, data: [] };
+
+                jest.spyOn(categoryService, 'findMany').mockResolvedValueOnce(
+                    result,
+                );
+
+                expect(
+                    await categoryController.findMany(request, queryDTO),
+                ).toStrictEqual(
+                    new PaginateCategory({
+                        ...result,
+                        ...request,
+                        ...queryDTO,
+                    }),
+                );
+            });
+
+            describe('findOne', () => {
+                const result = MockCategory;
+                const output = MockCategoryResource;
+
+                it('should return a category resource', async () => {
+                    jest.spyOn(
+                        categoryService,
+                        'findOne',
+                    ).mockResolvedValueOnce(result);
+
+                    expect(
+                        await categoryController.findOne(paramDTO),
+                    ).toStrictEqual(output);
+                });
+            });
+
+            describe('register', () => {
+                const result = undefined;
+
+                it('should register a category ', async () => {
+                    jest.spyOn(
+                        categoryService,
+                        'register',
+                    ).mockResolvedValueOnce(result);
+
+                    expect(
+                        await categoryController.register(createDTO),
+                    ).toStrictEqual(result);
+                });
+            });
+
+            describe('update', () => {
+                const result = undefined;
+
+                it('should update a category ', async () => {
+                    jest.spyOn(categoryService, 'update').mockResolvedValueOnce(
+                        result,
+                    );
+
+                    expect(
+                        await categoryController.update('token', updateDTO),
+                    ).toStrictEqual(result);
+                });
+            });
+
+            describe('remove', () => {
+                const result = undefined;
+
+                it('should remove a category ', async () => {
+                    jest.spyOn(categoryService, 'remove').mockResolvedValueOnce(
+                        result,
+                    );
+
+                    expect(
+                        await categoryController.remove('token'),
+                    ).toStrictEqual(result);
+                });
             });
         });
-    });
 
-    describe('Exception', () => {
-        describe('findOne', () => {
-            it('should return a NotFound if category not exists', async () => {
-                jest.spyOn(categoryService, 'findOne').mockRejectedValue(
-                    new NotFoundError(),
-                );
-                await expect(
-                    categoryController.findOne({ name: '111' }),
-                ).rejects.toThrow(NotFoundError);
+        describe('Exception', () => {
+            describe('findOne', () => {
+                it('should return a NotFound if category not exists', async () => {
+                    jest.spyOn(categoryService, 'findOne').mockRejectedValue(
+                        new NotFoundError(),
+                    );
+
+                    await expect(
+                        categoryController.findOne({ name: '111' }),
+                    ).rejects.toThrow(NotFoundError);
+                });
             });
-        });
 
-        describe('update', () => {
-            it('should return a NotFound if category not exists ', async () => {
-                jest.spyOn(categoryService, 'update').mockRejectedValue(
-                    new NotFoundError(),
-                );
-                await expect(
-                    categoryController.update('111', updateDTO),
-                ).rejects.toThrow(NotFoundError);
+            describe('update', () => {
+                it('should return a NotFound if category not exists ', async () => {
+                    jest.spyOn(categoryService, 'update').mockRejectedValue(
+                        new NotFoundError(),
+                    );
+                    await expect(
+                        categoryController.update('111', updateDTO),
+                    ).rejects.toThrow(NotFoundError);
+                });
             });
-        });
 
-        describe('remove', () => {
-            it('should return a NotFound if category not exists', async () => {
-                jest.spyOn(categoryService, 'remove').mockRejectedValue(
-                    new NotFoundError(),
-                );
-                await expect(categoryController.remove('111')).rejects.toThrow(
-                    NotFoundError,
-                );
+            describe('remove', () => {
+                it('should return a NotFound if category not exists', async () => {
+                    jest.spyOn(categoryService, 'remove').mockRejectedValue(
+                        new NotFoundError(),
+                    );
+                    await expect(
+                        categoryController.remove('111'),
+                    ).rejects.toThrow(NotFoundError);
+                });
             });
         });
     });

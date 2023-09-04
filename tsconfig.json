@@ -20,6 +20,7 @@
         "noFallthroughCasesInSwitch": false,
         "types": ["@types/jest"],
         "paths": {
+            "config/*": ["src/Config/*", "dist/src/Config/*"],
             "exceptions/*": ["src/Exceptions/*", "dist/src/Exceptions/*"],
             "controllers/*": ["src/Controllers/*", "dist/src/Controllers/*"],
             "modules/*": ["src/Modules/*", "dist/src/Modules/*"],

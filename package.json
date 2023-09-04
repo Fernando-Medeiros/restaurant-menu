@@ -6,7 +6,7 @@
     "private": true,
     "license": "MIT",
     "scripts": {
-        "build": "yarn exec prisma generate && tsc -build",
+        "build": "yarn exec prisma generate && tsc -b tsconfig.build.json",
         "format": "prettier --write \"./\" ",
         "start:dev": "nest start --watch",
         "start:debug": "nest start --debug --watch",
@@ -27,6 +27,7 @@
         "@prisma/client": "5.2.0",
         "class-transformer": "^0.5.1",
         "class-validator": "^0.14.0",
+        "nestjs-rate-limiter": "^3.1.0",
         "prisma": "^5.2.0",
         "reflect-metadata": "^0.1.13",
         "rxjs": "^7.2.0",

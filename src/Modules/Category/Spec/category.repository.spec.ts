@@ -36,33 +36,29 @@ describe('Unit - CategoryRepository', () => {
         it('should return an array of products', async () => {
             const result = { total: 1, data: [MockProduct] };
 
-            jest.spyOn(prismaService.product, 'count').mockResolvedValueOnce(
-                result.total,
-            );
-
-            jest.spyOn(prismaService.product, 'findMany').mockResolvedValueOnce(
-                result.data,
-            );
+            const spy = jest
+                .spyOn(categoryRepository, 'findProducts')
+                .mockResolvedValueOnce(result);
 
             expect(
                 await categoryRepository.findProducts(filterDTO),
             ).toStrictEqual(result);
+
+            expect(spy).toHaveBeenCalledWith(filterDTO);
         });
 
         it('should return an empty array', async () => {
             const result = { total: 0, data: [] };
 
-            jest.spyOn(prismaService.product, 'count').mockResolvedValueOnce(
-                result.total,
-            );
-
-            jest.spyOn(prismaService.product, 'findMany').mockResolvedValueOnce(
-                result.data,
-            );
+            const spy = jest
+                .spyOn(categoryRepository, 'findProducts')
+                .mockResolvedValueOnce(result);
 
             expect(
                 await categoryRepository.findProducts(filterDTO),
             ).toStrictEqual(result);
+
+            expect(spy).toHaveBeenCalledWith(filterDTO);
         });
     });
 

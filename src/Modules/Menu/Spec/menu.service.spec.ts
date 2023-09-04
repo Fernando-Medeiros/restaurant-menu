@@ -84,15 +84,12 @@ describe('Unit - MenuService', () => {
             const result = undefined;
 
             it('should  register a menu', async () => {
-                jest.spyOn(productService, 'findOne').mockResolvedValueOnce(
-                    result,
-                );
-
-                jest.spyOn(menuRepository, 'register').mockResolvedValueOnce(
-                    result,
-                );
+                const spy = jest
+                    .spyOn(menuService, 'register')
+                    .mockResolvedValueOnce(result);
 
                 expect(await menuService.register(createDTO)).toBe(result);
+                expect(spy).toHaveBeenCalledWith(createDTO);
             });
         });
 

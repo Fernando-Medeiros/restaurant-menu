@@ -14,13 +14,7 @@ services:
             - POSTGRES_DB=Restaurant
             - POSTGRES_PASSWORD=12345
             - ALLOW_EMPTY_PASSWORD=no
-        networks:
-            - restaurant
 
 volumes:
     postgresql_data:
         driver: local
-
-networks:
-    restaurant:
-        driver: bridge

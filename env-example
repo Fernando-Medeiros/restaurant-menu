@@ -1,8 +1,10 @@
-# postgres Dev
-# DATABASE_URL="postgresql://postgres:root@postgres:5432/restaurant?schema=public"
+LIMITER_MAX_REQUEST=100 # maximum requests within 7 minutes
+LIMITER_DURATION=7 # minutes -> EX 7 * 60 * 1000
 
 # mongo Dev
 DATABASE_URL="mongodb://root:root@localhost:27017/restaurant?authSource=admin"
 
+# postgres Dev
+# DATABASE_URL="postgresql://postgres:root@postgres:5432/restaurant?schema=public"
 # mongo Pro - Atlas Example
-DATABASE_URL="mongodb+srv://{username}:{password}.{host}/{database}?retryWrites=true&w=majority"
+# DATABASE_URL="mongodb+srv://{username}:{password}.{host}/{database}?retryWrites=true&w=majority"

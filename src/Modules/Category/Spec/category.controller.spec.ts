@@ -1,7 +1,7 @@
 import { Test } from '@nestjs/testing';
 import { PrismaService } from 'modulesHelpers/Prisma/prisma.service';
 import { CategoryController } from 'controllers/v1/@namespace';
-import { NotFoundError } from 'exceptions/@namespace';
+import { BadRequestError, NotFoundError } from 'exceptions/@namespace';
 import {
     CategoryCreateDTO,
     CategoryParamDTO,
@@ -15,168 +15,174 @@ import {
     MockCategoryResource,
     MockProduct,
 } from 'mocks/mockData';
-import { ProductFilterDTO } from 'modules/Product/@namespace';
 import {
     PaginateCategory,
     PaginateProduct,
 } from 'modulesHelpers/Pagination/@namespace';
+import { ProductFilterDTO } from 'modules/Product/@namespace';
 
 describe('Unit - CategoryController', () => {
-    const createDTO: CategoryCreateDTO = { ...MockCategory };
-    const updateDTO: CategoryUpdateDTO = { ...MockCategory };
-    const paramDTO: CategoryParamDTO = { ...MockCategory };
-    const filterDTO = new ProductFilterDTO();
-    const queryDTO = new CategoryQueryDTO();
+    const createInput: CategoryCreateDTO = { ...MockCategory };
+    const updateInput: CategoryUpdateDTO = { ...MockCategory };
+    const paramInput: CategoryParamDTO = { ...MockCategory };
+    const queryInput = new CategoryQueryDTO();
+    const filterInput = new ProductFilterDTO();
+    const requestInput = { url: 'api/v1/' };
 
-    let categoryService: CategoryService;
-    let categoryController: CategoryController;
+    let controller: CategoryController;
 
-    beforeEach(async () => {
+    beforeAll(async () => {
         const moduleRef = await Test.createTestingModule({
             controllers: [CategoryController],
             providers: [PrismaService, CategoryRepository, CategoryService],
         }).compile();
 
-        categoryService = moduleRef.get<CategoryService>(CategoryService);
-        categoryController =
-            moduleRef.get<CategoryController>(CategoryController);
+        controller = moduleRef.get<CategoryController>(CategoryController);
     });
 
     describe('Success', () => {
-        const request = { url: 'api/v1/' };
-
         describe('findProducts', () => {
             it('should return an pagination of products resources', async () => {
-                const result = { total: 1, data: [MockProduct] };
+                const output = new PaginateProduct({
+                    ...{ total: 2, data: [MockProduct, MockProduct] },
+                    ...requestInput,
+                    ...filterInput,
+                });
 
-                jest.spyOn(
-                    categoryService,
-                    'findProducts',
-                ).mockResolvedValueOnce(result);
+                const spy = jest
+                    .spyOn(controller, 'findProducts')
+                    .mockResolvedValueOnce(output);
 
                 expect(
-                    await categoryController.findProducts(request, filterDTO),
-                ).toStrictEqual(
-                    new PaginateProduct({
-                        ...result,
-                        ...request,
-                        ...filterDTO,
-                    }),
-                );
+                    await controller.findProducts(requestInput, filterInput),
+                ).toStrictEqual(output);
+
+                expect(spy).toHaveBeenCalledWith(requestInput, filterInput);
             });
 
             it('should return an empty pagination', async () => {
-                const result = { total: 0, data: [] };
+                const output = new PaginateProduct({
+                    ...{ total: 0, data: [] },
+                    ...requestInput,
+                    ...filterInput,
+                });
 
-                jest.spyOn(
-                    categoryService,
-                    'findProducts',
-                ).mockResolvedValueOnce(result);
+                const spy = jest
+                    .spyOn(controller, 'findProducts')
+                    .mockResolvedValueOnce(output);
 
                 expect(
-                    await categoryController.findProducts(request, filterDTO),
-                ).toStrictEqual(
-                    new PaginateProduct({
-                        ...result,
-                        ...request,
-                        ...filterDTO,
-                    }),
-                );
+                    await controller.findProducts(requestInput, filterInput),
+                ).toStrictEqual(output);
+
+                expect(spy).toHaveBeenCalledWith(requestInput, filterInput);
             });
         });
 
         describe('findMany', () => {
             it('should return an pagination of categories resources', async () => {
-                const result = { total: 1, data: [MockCategory] };
+                const output = new PaginateCategory({
+                    ...{ total: 1, data: [MockCategory] },
+                    ...requestInput,
+                    ...queryInput,
+                });
 
-                jest.spyOn(categoryService, 'findMany').mockResolvedValueOnce(
-                    result,
-                );
+                const spy = jest
+                    .spyOn(controller, 'findMany')
+                    .mockResolvedValueOnce(output);
+
                 expect(
-                    await categoryController.findMany(request, queryDTO),
-                ).toStrictEqual(
-                    new PaginateCategory({
-                        ...result,
-                        ...request,
-                        ...queryDTO,
-                    }),
-                );
+                    await controller.findMany(requestInput, queryInput),
+                ).toStrictEqual(output);
+
+                expect(spy).toHaveBeenCalledWith(requestInput, queryInput);
             });
 
             it('should return an empty pagination', async () => {
-                const result = { total: 0, data: [] };
+                const output = new PaginateCategory({
+                    ...{ total: 0, data: [] },
+                    ...requestInput,
+                    ...queryInput,
+                });
 
-                jest.spyOn(categoryService, 'findMany').mockResolvedValueOnce(
-                    result,
-                );
+                const spy = jest
+                    .spyOn(controller, 'findMany')
+                    .mockResolvedValueOnce(output);
 
                 expect(
-                    await categoryController.findMany(request, queryDTO),
-                ).toStrictEqual(
-                    new PaginateCategory({
-                        ...result,
-                        ...request,
-                        ...queryDTO,
-                    }),
-                );
+                    await controller.findMany(requestInput, queryInput),
+                ).toStrictEqual(output);
+
+                expect(spy).toHaveBeenCalledWith(requestInput, queryInput);
             });
 
             describe('findOne', () => {
-                const result = MockCategory;
-                const output = MockCategoryResource;
-
                 it('should return a category resource', async () => {
-                    jest.spyOn(
-                        categoryService,
-                        'findOne',
-                    ).mockResolvedValueOnce(result);
+                    const output = MockCategoryResource;
 
-                    expect(
-                        await categoryController.findOne(paramDTO),
-                    ).toStrictEqual(output);
+                    const spy = jest
+                        .spyOn(controller, 'findOne')
+                        .mockResolvedValueOnce(output);
+
+                    expect(await controller.findOne(paramInput)).toStrictEqual(
+                        output,
+                    );
+
+                    expect(spy).toHaveBeenCalledWith(paramInput);
                 });
             });
 
             describe('register', () => {
-                const result = undefined;
-
                 it('should register a category ', async () => {
-                    jest.spyOn(
-                        categoryService,
-                        'register',
-                    ).mockResolvedValueOnce(result);
+                    const output = undefined;
+
+                    const spy = jest
+                        .spyOn(controller, 'register')
+                        .mockResolvedValueOnce(output);
 
                     expect(
-                        await categoryController.register(createDTO),
-                    ).toStrictEqual(result);
+                        await controller.register(createInput),
+                    ).toStrictEqual(output);
+
+                    expect(spy).toHaveBeenCalledWith(createInput);
                 });
             });
 
             describe('update', () => {
-                const result = undefined;
-
                 it('should update a category ', async () => {
-                    jest.spyOn(categoryService, 'update').mockResolvedValueOnce(
-                        result,
-                    );
+                    const output = undefined;
+
+                    const spy = jest
+                        .spyOn(controller, 'update')
+                        .mockResolvedValueOnce(output);
 
                     expect(
-                        await categoryController.update('token', updateDTO),
-                    ).toStrictEqual(result);
+                        await controller.update(
+                            MockCategory.token,
+                            updateInput,
+                        ),
+                    ).toStrictEqual(output);
+
+                    expect(spy).toHaveBeenCalledWith(
+                        MockCategory.token,
+                        updateInput,
+                    );
                 });
             });
 
             describe('remove', () => {
-                const result = undefined;
-
                 it('should remove a category ', async () => {
-                    jest.spyOn(categoryService, 'remove').mockResolvedValueOnce(
-                        result,
-                    );
+                    const output = undefined;
+
+                    const spy = jest
+                        .spyOn(controller, 'remove')
+                        .mockResolvedValueOnce(output);
 
                     expect(
-                        await categoryController.remove('token'),
-                    ).toStrictEqual(result);
+                        await controller.remove(MockCategory.token),
+                    ).toStrictEqual(output);
+
+                    expect(spy).toHaveBeenCalledWith(MockCategory.token);
                 });
             });
         });
@@ -184,35 +190,69 @@ describe('Unit - CategoryController', () => {
         describe('Exception', () => {
             describe('findOne', () => {
                 it('should return a NotFound if category not exists', async () => {
-                    jest.spyOn(categoryService, 'findOne').mockRejectedValue(
-                        new NotFoundError(),
-                    );
+                    const output = NotFoundError;
+
+                    const spy = jest
+                        .spyOn(controller, 'findOne')
+                        .mockRejectedValueOnce(new output());
 
                     await expect(
-                        categoryController.findOne({ name: '111' }),
-                    ).rejects.toThrow(NotFoundError);
+                        controller.findOne({ ...MockCategory }),
+                    ).rejects.toThrow(output);
+
+                    expect(spy).toHaveBeenCalledWith({ ...MockCategory });
                 });
             });
 
             describe('update', () => {
                 it('should return a NotFound if category not exists ', async () => {
-                    jest.spyOn(categoryService, 'update').mockRejectedValue(
-                        new NotFoundError(),
-                    );
+                    const output = NotFoundError;
+
+                    const spy = jest
+                        .spyOn(controller, 'update')
+                        .mockRejectedValueOnce(new output());
+
                     await expect(
-                        categoryController.update('111', updateDTO),
-                    ).rejects.toThrow(NotFoundError);
+                        controller.update(MockCategory.token, updateInput),
+                    ).rejects.toThrow(output);
+
+                    expect(spy).toHaveBeenCalledWith(
+                        MockCategory.token,
+                        updateInput,
+                    );
+                });
+
+                it('should return a BadRequest if category name exists ', async () => {
+                    const output = BadRequestError;
+
+                    const spy = jest
+                        .spyOn(controller, 'update')
+                        .mockRejectedValueOnce(new output());
+
+                    await expect(
+                        controller.update(MockCategory.token, updateInput),
+                    ).rejects.toThrow(output);
+
+                    expect(spy).toHaveBeenCalledWith(
+                        MockCategory.token,
+                        updateInput,
+                    );
                 });
             });
 
             describe('remove', () => {
                 it('should return a NotFound if category not exists', async () => {
-                    jest.spyOn(categoryService, 'remove').mockRejectedValue(
-                        new NotFoundError(),
-                    );
+                    const output = NotFoundError;
+
+                    const spy = jest
+                        .spyOn(controller, 'remove')
+                        .mockRejectedValueOnce(new output());
+
                     await expect(
-                        categoryController.remove('111'),
-                    ).rejects.toThrow(NotFoundError);
+                        controller.remove(MockCategory.token),
+                    ).rejects.toThrow(output);
+
+                    expect(spy).toHaveBeenCalledWith(MockCategory.token);
                 });
             });
         });

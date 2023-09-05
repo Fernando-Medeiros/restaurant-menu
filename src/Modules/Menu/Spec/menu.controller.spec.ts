@@ -2,12 +2,12 @@ import { Test } from '@nestjs/testing';
 import { PrismaService } from 'modulesHelpers/Prisma/prisma.service';
 import { MenuController } from 'controllers/v1/@namespace';
 import {
+    MenuUpdateDTO,
     MenuCreateDTO,
     MenuParamDTO,
     MenuQueryDTO,
     MenuRepository,
     MenuService,
-    MenuUpdateDTO,
 } from 'modules/Menu/@namespace';
 import {
     CategoryRepository,
@@ -16,18 +16,18 @@ import {
 import { ProductRepository, ProductService } from 'modules/Product/@namespace';
 import { PaginateMenu } from 'modulesHelpers/Pagination/@namespace';
 import { MockMenu, MockMenuResource } from 'mocks/mockData';
-import { NotFoundError } from 'exceptions/@namespace';
+import { BadRequestError, NotFoundError } from 'exceptions/@namespace';
 
 describe('Unit - MenuController', () => {
-    const createDTO: MenuCreateDTO = { ...MockMenu };
-    const updateDTO: MenuUpdateDTO = { ...MockMenu };
-    const paramDTO: MenuParamDTO = { ...MockMenu };
-    const queryDTO = new MenuQueryDTO();
+    const createInput: MenuCreateDTO = { ...MockMenu };
+    const updateInput: MenuUpdateDTO = { ...MockMenu };
+    const paramInput: MenuParamDTO = { ...MockMenu };
+    const queryInput = new MenuQueryDTO();
+    const requestInput = { url: 'api/v1/menus' };
 
-    let menuService: MenuService;
-    let menuController: MenuController;
+    let controller: MenuController;
 
-    beforeEach(async () => {
+    beforeAll(async () => {
         const moduleRef = await Test.createTestingModule({
             controllers: [MenuController],
             providers: [
@@ -41,133 +41,173 @@ describe('Unit - MenuController', () => {
             ],
         }).compile();
 
-        menuService = moduleRef.get<MenuService>(MenuService);
-        menuController = moduleRef.get<MenuController>(MenuController);
+        controller = moduleRef.get<MenuController>(MenuController);
     });
 
     describe('Success', () => {
-        const request = { url: 'api/v1/menus' };
-
         describe('findMany', () => {
-            it('should return an array of menus resources', async () => {
-                const result = { total: 1, data: [MockMenu] };
+            it('should return an paginate of menus resources', async () => {
+                const output = new PaginateMenu({
+                    ...{ total: 1, data: [MockMenu] },
+                    ...requestInput,
+                    ...queryInput,
+                });
 
-                jest.spyOn(menuService, 'findMany').mockResolvedValueOnce(
-                    result,
-                );
+                const spy = jest
+                    .spyOn(controller, 'findMany')
+                    .mockResolvedValueOnce(output);
 
                 expect(
-                    await menuController.findMany(request, queryDTO),
-                ).toStrictEqual(
-                    new PaginateMenu({
-                        ...result,
-                        ...request,
-                        ...queryDTO,
-                    }),
-                );
+                    await controller.findMany(requestInput, queryInput),
+                ).toStrictEqual(output);
+
+                expect(spy).toHaveBeenCalledWith(requestInput, queryInput);
             });
 
-            it('should return an empty array', async () => {
-                const result = { total: 0, data: [] };
+            it('should return an empty paginate', async () => {
+                const output = new PaginateMenu({
+                    ...{ total: 0, data: [] },
+                    ...requestInput,
+                    ...queryInput,
+                });
 
-                jest.spyOn(menuService, 'findMany').mockResolvedValueOnce(
-                    result,
-                );
+                const spy = jest
+                    .spyOn(controller, 'findMany')
+                    .mockResolvedValueOnce(output);
 
                 expect(
-                    await menuController.findMany(request, queryDTO),
-                ).toStrictEqual(
-                    new PaginateMenu({
-                        ...result,
-                        ...request,
-                        ...queryDTO,
-                    }),
-                );
+                    await controller.findMany(requestInput, queryInput),
+                ).toStrictEqual(output);
+
+                expect(spy).toHaveBeenCalledWith(requestInput, queryInput);
             });
         });
 
         describe('findOne', () => {
             it('should return a menu resource', async () => {
-                const result = MockMenu;
                 const output = MockMenuResource;
 
-                jest.spyOn(menuService, 'findOne').mockResolvedValueOnce(
-                    result,
-                );
-                expect(await menuController.findOne(paramDTO)).toStrictEqual(
+                const spy = jest
+                    .spyOn(controller, 'findOne')
+                    .mockResolvedValueOnce(output);
+
+                expect(await controller.findOne(paramInput)).toStrictEqual(
                     output,
                 );
+
+                expect(spy).toHaveBeenCalledWith(paramInput);
             });
         });
 
         describe('register', () => {
-            const result = undefined;
-
             it('should register a menu ', async () => {
-                jest.spyOn(menuService, 'register').mockResolvedValueOnce(
-                    result,
+                const output = undefined;
+
+                const spy = jest
+                    .spyOn(controller, 'register')
+                    .mockResolvedValueOnce(output);
+
+                expect(await controller.register(createInput)).toStrictEqual(
+                    output,
                 );
-                expect(await menuController.register(createDTO)).toStrictEqual(
-                    result,
-                );
+
+                expect(spy).toHaveBeenCalledWith(createInput);
             });
         });
 
         describe('update', () => {
-            const result = undefined;
-
             it('should update a menu ', async () => {
-                jest.spyOn(menuService, 'update').mockResolvedValueOnce(result);
+                const output = undefined;
+
+                const spy = jest
+                    .spyOn(controller, 'update')
+                    .mockResolvedValueOnce(output);
+
                 expect(
-                    await menuController.update('token', updateDTO),
-                ).toStrictEqual(result);
+                    await controller.update(MockMenu.token, updateInput),
+                ).toStrictEqual(output);
+
+                expect(spy).toHaveBeenCalledWith(MockMenu.token, updateInput);
             });
         });
 
         describe('remove', () => {
-            const result = undefined;
-
             it('should remove a menu ', async () => {
-                jest.spyOn(menuService, 'remove').mockResolvedValueOnce(result);
-                expect(await menuController.remove('token')).toStrictEqual(
-                    result,
+                const output = undefined;
+
+                const spy = jest
+                    .spyOn(controller, 'remove')
+                    .mockResolvedValueOnce(output);
+
+                expect(await controller.remove(MockMenu.token)).toStrictEqual(
+                    output,
                 );
+
+                expect(spy).toHaveBeenCalledWith(MockMenu.token);
             });
         });
     });
 
     describe('Exception', () => {
         describe('findOne', () => {
-            it('should return a NotFound if menu not exists', async () => {
-                jest.spyOn(menuService, 'findOne').mockRejectedValue(
-                    new NotFoundError(),
+            it('should return NotFound if menu not exists', async () => {
+                const output = NotFoundError;
+
+                const spy = jest
+                    .spyOn(controller, 'findOne')
+                    .mockRejectedValueOnce(new output());
+
+                await expect(controller.findOne(paramInput)).rejects.toThrow(
+                    output,
                 );
-                await expect(
-                    menuController.findOne({ token: '111' }),
-                ).rejects.toThrow(NotFoundError);
+
+                expect(spy).toHaveBeenCalledWith(paramInput);
             });
         });
 
         describe('update', () => {
-            it('should return a NotFound if menu not exists ', async () => {
-                jest.spyOn(menuService, 'update').mockRejectedValue(
-                    new NotFoundError(),
-                );
+            it('should return NotFound if menu not exists ', async () => {
+                const output = NotFoundError;
+
+                const spy = jest
+                    .spyOn(controller, 'update')
+                    .mockRejectedValueOnce(new output());
+
                 await expect(
-                    menuController.update('111', updateDTO),
-                ).rejects.toThrow(NotFoundError);
+                    controller.update(MockMenu.token, updateInput),
+                ).rejects.toThrow(output);
+
+                expect(spy).toHaveBeenCalledWith(MockMenu.token, updateInput);
+            });
+
+            it('should return BadRequest if the menu is registered', async () => {
+                const output = BadRequestError;
+
+                const spy = jest
+                    .spyOn(controller, 'update')
+                    .mockRejectedValueOnce(new output());
+
+                await expect(
+                    controller.update(MockMenu.token, updateInput),
+                ).rejects.toThrow(output);
+
+                expect(spy).toHaveBeenCalledWith(MockMenu.token, updateInput);
             });
         });
 
         describe('remove', () => {
-            it('should return a NotFound if menu not exists', async () => {
-                jest.spyOn(menuService, 'remove').mockRejectedValue(
-                    new NotFoundError(),
+            it('should return NotFound if menu not exists', async () => {
+                const output = NotFoundError;
+
+                const spy = jest
+                    .spyOn(controller, 'remove')
+                    .mockRejectedValueOnce(new output());
+
+                await expect(controller.remove(MockMenu.token)).rejects.toThrow(
+                    output,
                 );
 
-                await expect(menuController.remove('111')).rejects.toThrow(
-                    NotFoundError,
-                );
+                expect(spy).toHaveBeenCalledWith(MockMenu.token);
             });
         });
     });

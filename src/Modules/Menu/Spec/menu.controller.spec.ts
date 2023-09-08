@@ -101,7 +101,7 @@ describe('Unit - MenuController', () => {
 
         describe('register', () => {
             it('should register a menu ', async () => {
-                const output = undefined;
+                const output = MockMenuResource;
 
                 const spy = jest
                     .spyOn(controller, 'register')

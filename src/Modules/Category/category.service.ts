@@ -34,10 +34,10 @@ export class CategoryService {
         return category;
     }
 
-    async register(dto: CategoryCreateDTO): Promise<void> {
+    async register(dto: CategoryCreateDTO): Promise<CategoryDTO> {
         await this.throwUniqueCategoryName({ ...dto });
 
-        await this._repository.register(dto);
+        return this._repository.register(dto);
     }
 
     async update(token: string, dto: CategoryUpdateDTO): Promise<void> {
@@ -53,7 +53,7 @@ export class CategoryService {
     }
 
     public async throwAvailableCategories(categoriesIDs: string[]) {
-        categoriesIDs.forEach(async (token) => {
+        categoriesIDs?.forEach(async (token) => {
             if ((await this._repository.findOne({ token })) == null)
                 throw new BadRequestError(
                     `This ${token} category is not registered in the database`,

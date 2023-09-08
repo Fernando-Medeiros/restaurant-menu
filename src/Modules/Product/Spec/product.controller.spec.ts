@@ -9,128 +9,141 @@ import {
     ProductService,
     ProductUpdateDTO,
 } from 'modules/Product/@namespace';
-import { MockProduct, MockProductResource } from 'mocks/mockData';
-import { NotFoundError } from 'exceptions/@namespace';
 import {
     CategoryRepository,
     CategoryService,
 } from 'modules/Category/@namespace';
+import { MockProduct, MockProductResource } from 'mocks/mockData';
 import { PaginateProduct } from 'modulesHelpers/Pagination/@namespace';
+import { BadRequestError, NotFoundError } from 'exceptions/@namespace';
 
 describe('Unit - ProductController', () => {
-    const createDTO: ProductCreateDTO = { ...MockProduct };
-    const updateDTO: ProductUpdateDTO = { ...MockProduct };
-    const paramDTO: ProductParamDTO = { ...MockProduct };
-    const queryDTO = new ProductQueryDTO();
+    const createInput: ProductCreateDTO = { ...MockProduct };
+    const updateInput: ProductUpdateDTO = { ...MockProduct };
+    const paramInput: ProductParamDTO = { ...MockProduct };
+    const queryInput = new ProductQueryDTO();
+    const requestInput = { url: 'api/v1/' };
 
-    let productService: ProductService;
-    let productController: ProductController;
+    let controller: ProductController;
 
-    beforeEach(async () => {
+    beforeAll(async () => {
         const moduleRef = await Test.createTestingModule({
             controllers: [ProductController],
             providers: [
                 PrismaService,
                 ProductRepository,
-                ProductService,
-                CategoryService,
                 CategoryRepository,
+                CategoryService,
+                ProductService,
             ],
         }).compile();
 
-        productService = moduleRef.get<ProductService>(ProductService);
-        productController = moduleRef.get<ProductController>(ProductController);
+        controller = moduleRef.get<ProductController>(ProductController);
     });
 
     describe('Success', () => {
-        const request = { url: 'api/v1/' };
-
         describe('findMany', () => {
-            it('should return an array of products resources', async () => {
-                const result = { total: 1, data: [MockProduct] };
+            it('should return an paginate of products resources', async () => {
+                const output = new PaginateProduct({
+                    ...{ total: 2, data: [MockProduct, MockProduct] },
+                    ...requestInput,
+                    ...queryInput,
+                });
 
-                jest.spyOn(productService, 'findMany').mockResolvedValueOnce(
-                    result,
-                );
+                const spy = jest
+                    .spyOn(controller, 'findMany')
+                    .mockResolvedValueOnce(output);
+
                 expect(
-                    await productController.findMany(request, queryDTO),
-                ).toStrictEqual(
-                    new PaginateProduct({
-                        ...result,
-                        ...request,
-                        ...queryDTO,
-                    }),
-                );
+                    await controller.findMany(requestInput, queryInput),
+                ).toStrictEqual(output);
+
+                expect(spy).toHaveBeenCalledWith(requestInput, queryInput);
             });
 
-            it('should return an empty array', async () => {
-                const result = { total: 0, data: [] };
+            it('should return an paginate of  empty resources', async () => {
+                const output = new PaginateProduct({
+                    ...{ total: 0, data: [] },
+                    ...requestInput,
+                    ...queryInput,
+                });
 
-                jest.spyOn(productService, 'findMany').mockResolvedValueOnce(
-                    result,
-                );
+                const spy = jest
+                    .spyOn(controller, 'findMany')
+                    .mockResolvedValueOnce(output);
+
                 expect(
-                    await productController.findMany(request, queryDTO),
-                ).toStrictEqual(
-                    new PaginateProduct({
-                        ...result,
-                        ...request,
-                        ...queryDTO,
-                    }),
-                );
+                    await controller.findMany(requestInput, queryInput),
+                ).toStrictEqual(output);
+
+                expect(spy).toHaveBeenCalledWith(requestInput, queryInput);
             });
         });
 
         describe('findOne', () => {
             it('should return a product resource', async () => {
-                const result = MockProduct;
                 const output = MockProductResource;
 
-                jest.spyOn(productService, 'findOne').mockResolvedValueOnce(
-                    result,
-                );
-                expect(await productController.findOne(paramDTO)).toStrictEqual(
+                const spy = jest
+                    .spyOn(controller, 'findOne')
+                    .mockResolvedValueOnce(output);
+
+                expect(await controller.findOne(paramInput)).toStrictEqual(
                     output,
                 );
+
+                expect(spy).toHaveBeenCalledWith(paramInput);
             });
         });
 
         describe('register', () => {
-            const result = undefined;
-
             it('should register a product ', async () => {
-                jest.spyOn(productService, 'register').mockResolvedValueOnce(
-                    result,
+                const output = MockProductResource;
+
+                const spy = jest
+                    .spyOn(controller, 'register')
+                    .mockResolvedValueOnce(output);
+
+                expect(await controller.register(createInput)).toStrictEqual(
+                    output,
                 );
-                expect(
-                    await productController.register(createDTO),
-                ).toStrictEqual(result);
+
+                expect(spy).toHaveBeenCalledWith(createInput);
             });
         });
 
         describe('update', () => {
-            const result = undefined;
-
             it('should update a product ', async () => {
-                jest.spyOn(productService, 'update').mockResolvedValueOnce(
-                    result,
-                );
+                const output = undefined;
+
+                const spy = jest
+                    .spyOn(controller, 'update')
+                    .mockResolvedValueOnce(output);
+
                 expect(
-                    await productController.update('token', updateDTO),
-                ).toStrictEqual(result);
+                    await controller.update(MockProduct.token, updateInput),
+                ).toStrictEqual(output);
+
+                expect(spy).toHaveBeenCalledWith(
+                    MockProduct.token,
+                    updateInput,
+                );
             });
         });
 
         describe('remove', () => {
-            const result = undefined;
-
             it('should remove a product ', async () => {
-                jest.spyOn(productService, 'remove').mockResolvedValueOnce(
-                    result,
-                );
-                expect(await productController.remove('token')).toStrictEqual(
-                    result,
-                );
+                const output = undefined;
+
+                const spy = jest
+                    .spyOn(controller, 'remove')
+                    .mockResolvedValueOnce(output);
+
+                expect(
+                    await controller.remove(MockProduct.token),
+                ).toStrictEqual(output);
+
+                expect(spy).toHaveBeenCalledWith(MockProduct.token);
             });
         });
     });
@@ -138,35 +151,69 @@ describe('Unit - ProductController', () => {
     describe('Exception', () => {
         describe('findOne', () => {
             it('should return a NotFound if product not exists', async () => {
-                jest.spyOn(productService, 'findOne').mockRejectedValue(
-                    new NotFoundError(),
-                );
+                const output = NotFoundError;
+
+                const spy = jest
+                    .spyOn(controller, 'findOne')
+                    .mockRejectedValueOnce(new output());
+
                 await expect(
-                    productController.findOne({ name: '111' }),
-                ).rejects.toThrow(NotFoundError);
+                    controller.findOne({ ...MockProduct }),
+                ).rejects.toThrow(output);
+
+                expect(spy).toHaveBeenCalledWith({ ...MockProduct });
             });
         });
 
         describe('update', () => {
             it('should return a NotFound if product not exists ', async () => {
-                jest.spyOn(productService, 'update').mockRejectedValue(
-                    new NotFoundError(),
-                );
+                const output = NotFoundError;
+
+                const spy = jest
+                    .spyOn(controller, 'update')
+                    .mockRejectedValueOnce(new output());
+
                 await expect(
-                    productController.update('111', updateDTO),
-                ).rejects.toThrow(NotFoundError);
+                    controller.update(MockProduct.token, updateInput),
+                ).rejects.toThrow(output);
+
+                expect(spy).toHaveBeenCalledWith(
+                    MockProduct.token,
+                    updateInput,
+                );
+            });
+
+            it('should return a BadRequest if categoryID not exists ', async () => {
+                const output = BadRequestError;
+
+                const spy = jest
+                    .spyOn(controller, 'update')
+                    .mockRejectedValueOnce(new output());
+
+                await expect(
+                    controller.update(MockProduct.token, updateInput),
+                ).rejects.toThrow(output);
+
+                expect(spy).toHaveBeenCalledWith(
+                    MockProduct.token,
+                    updateInput,
+                );
             });
         });
 
         describe('remove', () => {
             it('should return a NotFound if product not exists', async () => {
-                jest.spyOn(productService, 'remove').mockRejectedValue(
-                    new NotFoundError(),
-                );
+                const output = NotFoundError;
 
-                await expect(productController.remove('111')).rejects.toThrow(
-                    NotFoundError,
-                );
+                const spy = jest
+                    .spyOn(controller, 'remove')
+                    .mockRejectedValueOnce(new output());
+
+                await expect(
+                    controller.remove(MockProduct.token),
+                ).rejects.toThrow(output);
+
+                expect(spy).toHaveBeenCalledWith(MockProduct.token);
             });
         });
     });

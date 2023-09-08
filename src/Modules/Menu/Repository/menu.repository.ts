@@ -53,8 +53,11 @@ export class MenuRepository {
         });
     }
 
-    async register(dto: MenuCreateDTO): Promise<void> {
-        await this._context.menu.create({ data: dto });
+    async register(dto: MenuCreateDTO): Promise<MenuDTO> {
+        return this._context.menu.create({
+            data: dto,
+            include: { product: true },
+        });
     }
 
     async update(token: string, dto: MenuUpdateDTO): Promise<void> {

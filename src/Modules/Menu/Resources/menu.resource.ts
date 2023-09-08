@@ -6,8 +6,6 @@ import { ProductResource } from 'modules/Product/@namespace';
 export class MenuResource {
     @ApiProperty()
     token: string;
-    @ApiProperty()
-    productToken: string;
     @ApiProperty({ enum: Period })
     period: Period;
     @ApiProperty()
@@ -17,7 +15,6 @@ export class MenuResource {
 
     constructor(dto: MenuDTO) {
         this.token = dto.token;
-        this.productToken = dto.productToken;
         this.period = dto.period;
         this.createdAt = dto.createdAt;
         this.product = new ProductResource(dto.product);

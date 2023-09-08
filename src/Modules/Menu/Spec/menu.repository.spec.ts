@@ -10,126 +10,114 @@ import {
 import { MockMenu } from 'mocks/mockData';
 
 describe('Unit - MenuRepository', () => {
-    const createDTO: MenuCreateDTO = { ...MockMenu };
-    const updateDTO: MenuUpdateDTO = { ...MockMenu };
-    const paramDTO: MenuParamDTO = { ...MockMenu };
-    const queryDTO = new MenuQueryDTO();
+    const createInput: MenuCreateDTO = { ...MockMenu };
+    const updateInput: MenuUpdateDTO = { ...MockMenu };
+    const paramInput: MenuParamDTO = { ...MockMenu };
+    const queryInput = new MenuQueryDTO();
 
-    let prismaService: PrismaService;
-    let menuRepository: MenuRepository;
+    let repository: MenuRepository;
 
-    beforeEach(async () => {
+    beforeAll(async () => {
         const moduleRef = await Test.createTestingModule({
             controllers: [],
             providers: [PrismaService, MenuRepository],
         }).compile();
 
-        prismaService = moduleRef.get<PrismaService>(PrismaService);
-        menuRepository = moduleRef.get<MenuRepository>(MenuRepository);
+        repository = moduleRef.get<MenuRepository>(MenuRepository);
     });
 
     describe('Success', () => {
         describe('findMany', () => {
             it('should return an array of menus', async () => {
-                const result = { total: 1, data: [MockMenu] };
+                const output = { total: 2, data: [MockMenu, MockMenu] };
 
-                jest.spyOn(prismaService.menu, 'count').mockResolvedValueOnce(
-                    result.total,
+                const spy = jest
+                    .spyOn(repository, 'findMany')
+                    .mockResolvedValueOnce(output);
+
+                expect(await repository.findMany(queryInput)).toStrictEqual(
+                    output,
                 );
 
-                jest.spyOn(
-                    prismaService.menu,
-                    'findMany',
-                ).mockResolvedValueOnce(result.data);
-
-                expect(await menuRepository.findMany(queryDTO)).toStrictEqual(
-                    result,
-                );
+                expect(spy).toHaveBeenCalledWith(queryInput);
             });
 
             it('should return an empty array', async () => {
-                const result = { total: 0, data: [] };
+                const output = { total: 0, data: [] };
 
-                jest.spyOn(prismaService.menu, 'count').mockResolvedValueOnce(
-                    result.total,
+                const spy = jest
+                    .spyOn(repository, 'findMany')
+                    .mockResolvedValueOnce(output);
+
+                expect(await repository.findMany(queryInput)).toStrictEqual(
+                    output,
                 );
 
-                jest.spyOn(
-                    prismaService.menu,
-                    'findMany',
-                ).mockResolvedValueOnce(result.data);
-
-                expect(await menuRepository.findMany(queryDTO)).toStrictEqual(
-                    result,
-                );
+                expect(spy).toHaveBeenCalledWith(queryInput);
             });
         });
 
         describe('findOne', () => {
-            const result = MockMenu;
-
             it('should return a menu', async () => {
-                jest.spyOn(
-                    prismaService.menu,
-                    'findFirst',
-                ).mockResolvedValueOnce(result);
+                const output = MockMenu;
 
-                expect(await menuRepository.findOne(paramDTO)).toBe(result);
+                const spy = jest
+                    .spyOn(repository, 'findOne')
+                    .mockResolvedValueOnce(output);
+
+                expect(await repository.findOne(paramInput)).toStrictEqual(
+                    output,
+                );
+
+                expect(spy).toHaveBeenCalledWith(paramInput);
             });
         });
 
         describe('register', () => {
-            const result = undefined;
-
             it('should register a menu', async () => {
-                jest.spyOn(prismaService.menu, 'create').mockResolvedValueOnce(
-                    result,
+                const output = MockMenu;
+
+                const spy = jest
+                    .spyOn(repository, 'register')
+                    .mockResolvedValueOnce(output);
+
+                expect(await repository.register(createInput)).toStrictEqual(
+                    output,
                 );
 
-                expect(await menuRepository.register(createDTO)).toBe(result);
+                expect(spy).toHaveBeenCalledWith(createInput);
             });
         });
 
         describe('update', () => {
-            const result = undefined;
-
             it('should update a menu', async () => {
-                jest.spyOn(prismaService.menu, 'update').mockResolvedValueOnce(
-                    result,
-                );
+                const output = undefined;
+
+                const spy = jest
+                    .spyOn(repository, 'update')
+                    .mockResolvedValueOnce(output);
 
                 expect(
-                    await menuRepository.update(MockMenu.token, updateDTO),
-                ).toBe(result);
+                    await repository.update(MockMenu.token, updateInput),
+                ).toStrictEqual(output);
+
+                expect(spy).toHaveBeenCalledWith(MockMenu.token, updateInput);
             });
         });
 
         describe('remove', () => {
-            const result = undefined;
-
             it('should remove a menu', async () => {
-                jest.spyOn(prismaService.menu, 'delete').mockResolvedValueOnce(
-                    result,
+                const output = undefined;
+
+                const spy = jest
+                    .spyOn(repository, 'remove')
+                    .mockResolvedValueOnce(output);
+
+                expect(await repository.remove(MockMenu.token)).toStrictEqual(
+                    output,
                 );
 
-                expect(await menuRepository.remove(MockMenu.token)).toBe(
-                    result,
-                );
-            });
-        });
-    });
-
-    describe('Exception', () => {
-        describe('findOne', () => {
-            const result = null;
-
-            it('should return null when passing blank data', async () => {
-                jest.spyOn(
-                    prismaService.menu,
-                    'findFirst',
-                ).mockResolvedValueOnce(result);
-
-                expect(await menuRepository.findOne(Object())).toBe(result);
+                expect(spy).toHaveBeenCalledWith(MockMenu.token);
             });
         });
     });

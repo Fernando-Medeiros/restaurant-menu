@@ -5,132 +5,152 @@ import {
     CategoryParamDTO,
     CategoryQueryDTO,
     CategoryRepository,
-    CategoryService,
     CategoryUpdateDTO,
 } from 'modules/Category/@namespace';
 import { MockCategory, MockProduct } from 'mocks/mockData';
 import { ProductFilterDTO } from 'modules/Product/@namespace';
 
 describe('Unit - CategoryRepository', () => {
-    const createDTO: CategoryCreateDTO = { ...MockCategory };
-    const updateDTO: CategoryUpdateDTO = { ...MockCategory };
-    const paramDTO: CategoryParamDTO = { ...MockCategory };
-    const filterDTO = new ProductFilterDTO();
-    const queryDTO = new CategoryQueryDTO();
+    const createInput: CategoryCreateDTO = { ...MockCategory };
+    const updateInput: CategoryUpdateDTO = { ...MockCategory };
+    const paramInput: CategoryParamDTO = { ...MockCategory };
+    const queryInput = new CategoryQueryDTO();
+    const filterInput = new ProductFilterDTO();
 
-    let prismaService: PrismaService;
-    let categoryRepository: CategoryRepository;
+    let repository: CategoryRepository;
 
-    beforeEach(async () => {
+    beforeAll(async () => {
         const moduleRef = await Test.createTestingModule({
             controllers: [],
-            providers: [PrismaService, CategoryRepository, CategoryService],
+            providers: [PrismaService, CategoryRepository],
         }).compile();
 
-        prismaService = moduleRef.get<PrismaService>(PrismaService);
-        categoryRepository =
-            moduleRef.get<CategoryRepository>(CategoryRepository);
+        repository = moduleRef.get<CategoryRepository>(CategoryRepository);
     });
 
     describe('findProducts', () => {
         it('should return an array of products', async () => {
-            const result = { total: 1, data: [MockProduct] };
+            const output = { total: 2, data: [MockProduct, MockProduct] };
 
             const spy = jest
-                .spyOn(categoryRepository, 'findProducts')
-                .mockResolvedValueOnce(result);
+                .spyOn(repository, 'findProducts')
+                .mockResolvedValueOnce(output);
 
-            expect(
-                await categoryRepository.findProducts(filterDTO),
-            ).toStrictEqual(result);
+            expect(await repository.findProducts(filterInput)).toStrictEqual(
+                output,
+            );
 
-            expect(spy).toHaveBeenCalledWith(filterDTO);
+            expect(spy).toHaveBeenCalledWith(filterInput);
         });
 
         it('should return an empty array', async () => {
-            const result = { total: 0, data: [] };
+            const output = { total: 0, data: [] };
 
             const spy = jest
-                .spyOn(categoryRepository, 'findProducts')
-                .mockResolvedValueOnce(result);
+                .spyOn(repository, 'findProducts')
+                .mockResolvedValueOnce(output);
 
-            expect(
-                await categoryRepository.findProducts(filterDTO),
-            ).toStrictEqual(result);
+            expect(await repository.findProducts(filterInput)).toStrictEqual(
+                output,
+            );
 
-            expect(spy).toHaveBeenCalledWith(filterDTO);
+            expect(spy).toHaveBeenCalledWith(filterInput);
         });
     });
 
     describe('findMany', () => {
         it('should return an array of categories', async () => {
-            const result = { total: 1, data: [MockCategory] };
+            const output = { total: 2, data: [MockCategory, MockCategory] };
 
-            jest.spyOn(prismaService.category, 'count').mockResolvedValueOnce(
-                result.total,
-            );
+            const spy = jest
+                .spyOn(repository, 'findMany')
+                .mockResolvedValueOnce(output);
 
-            jest.spyOn(
-                prismaService.category,
-                'findMany',
-            ).mockResolvedValueOnce(result.data);
+            expect(await repository.findMany(queryInput)).toStrictEqual(output);
 
-            expect(await categoryRepository.findMany(queryDTO)).toStrictEqual(
-                result,
-            );
+            expect(spy).toHaveBeenCalledWith(queryInput);
+        });
+
+        it('should return an empty array', async () => {
+            const output = { total: 0, data: [] };
+
+            const spy = jest
+                .spyOn(repository, 'findMany')
+                .mockResolvedValueOnce(output);
+
+            expect(await repository.findMany(queryInput)).toStrictEqual(output);
+
+            expect(spy).toHaveBeenCalledWith(queryInput);
         });
     });
 
     describe('findOne', () => {
-        const result = MockCategory;
-
         it('should return a category', async () => {
-            jest.spyOn(
-                prismaService.category,
-                'findFirst',
-            ).mockResolvedValueOnce(result);
+            const output = MockCategory;
 
-            expect(await categoryRepository.findOne(paramDTO)).toBe(result);
+            const spy = jest
+                .spyOn(repository, 'findOne')
+                .mockResolvedValueOnce(output);
+
+            expect(await repository.findOne(paramInput)).toBe(output);
+
+            expect(spy).toHaveBeenCalledWith(paramInput);
+        });
+
+        it('should return a null or undefined', async () => {
+            const output = null;
+
+            const spy = jest
+                .spyOn(repository, 'findOne')
+                .mockResolvedValueOnce(output);
+
+            expect(await repository.findOne(paramInput)).toBe(output);
+
+            expect(spy).toHaveBeenCalledWith(paramInput);
         });
     });
 
     describe('register', () => {
-        const result = undefined;
-
         it('should register a category', async () => {
-            jest.spyOn(prismaService.category, 'create').mockImplementation(
-                () => result,
-            );
+            const output = MockCategory;
 
-            expect(await categoryRepository.register(createDTO)).toBe(result);
+            const spy = jest
+                .spyOn(repository, 'register')
+                .mockResolvedValueOnce(output);
+
+            expect(await repository.register(createInput)).toBe(output);
+
+            expect(spy).toHaveBeenCalledWith(createInput);
         });
     });
 
     describe('update', () => {
-        const result = undefined;
-
         it('should update a category', async () => {
-            jest.spyOn(prismaService.category, 'update').mockImplementation(
-                result,
-            );
+            const output = undefined;
+
+            const spy = jest
+                .spyOn(repository, 'update')
+                .mockResolvedValueOnce(output);
 
             expect(
-                await categoryRepository.update(MockCategory.token, updateDTO),
-            ).toBe(result);
+                await repository.update(MockCategory.token, updateInput),
+            ).toBe(output);
+
+            expect(spy).toHaveBeenCalledWith(MockCategory.token, updateInput);
         });
     });
 
     describe('remove', () => {
-        const result = undefined;
-
         it('should remove a category', async () => {
-            jest.spyOn(prismaService.category, 'delete').mockImplementation(
-                () => result,
-            );
+            const output = undefined;
 
-            expect(await categoryRepository.remove(MockCategory.token)).toBe(
-                result,
-            );
+            const spy = jest
+                .spyOn(repository, 'remove')
+                .mockResolvedValueOnce(output);
+
+            expect(await repository.remove(MockCategory.token)).toBe(output);
+
+            expect(spy).toHaveBeenCalledWith(MockCategory.token);
         });
     });
 });

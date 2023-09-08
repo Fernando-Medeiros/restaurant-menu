@@ -76,12 +76,13 @@ export class MenuController {
 
     @Post()
     @ApiOperation({ summary: 'register a product in the menu' })
-    @ApiCreatedResponse({ description: 'success' })
+    @ApiCreatedResponse({ description: 'success', type: MenuResource })
     @ApiBadRequestResponse({ description: 'bad request' })
-    @ApiNotFoundResponse({ description: 'not found' })
     @HttpCode(201)
     async register(@Body() dto: MenuCreateDTO) {
-        await this._service.register(dto);
+        const menu = await this._service.register(dto);
+
+        return new MenuResource(menu);
     }
 
     @Put(':token')

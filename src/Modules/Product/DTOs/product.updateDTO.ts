@@ -46,5 +46,5 @@ export class ProductUpdateDTO {
     @ArrayUnique()
     @IsString({ each: true })
     @Length(24, 24, { each: true })
-    categoriesIDs: string[];
+    categoriesIDs: string[] = [];
 }

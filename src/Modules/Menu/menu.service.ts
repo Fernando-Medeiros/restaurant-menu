@@ -37,12 +37,12 @@ export class MenuService {
         return menu;
     }
 
-    async register(dto: MenuCreateDTO): Promise<void> {
+    async register(dto: MenuCreateDTO): Promise<MenuDTO> {
         await this._productService.findOne({ token: dto.productToken });
 
         await this.throwUniqueProductRegisteredByPeriod(dto);
 
-        await this._repository.register(dto);
+        return this._repository.register(dto);
     }
 
     async update(token: string, dto: MenuUpdateDTO): Promise<void> {

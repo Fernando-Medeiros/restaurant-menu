@@ -91,7 +91,7 @@ describe('Unit - MenuService', () => {
 
         describe('register', () => {
             it('should  register a menu', async () => {
-                const output = undefined;
+                const output = MockMenu;
 
                 const spy = jest
                     .spyOn(service, 'register')

@@ -7,7 +7,7 @@ export const MockCategory: CategoryDTO = {
     name: 'Mock Category',
     createdAt: new Date(),
     updatedAt: new Date(),
-    productsIDs: [],
+    productsIDs: ['64ed4ffa6d30117c1189f262'],
     products: [],
 };
 export const MockProduct: ProductDTO = {
@@ -18,7 +18,7 @@ export const MockProduct: ProductDTO = {
     price: 9.99,
     createdAt: new Date(),
     updatedAt: new Date(),
-    categoriesIDs: [],
+    categoriesIDs: ['64ed4ffa6d30188c1189f262'],
     categories: [],
 };
 export const MockMenu: MenuDTO = {

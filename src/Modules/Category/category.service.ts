@@ -53,7 +53,7 @@ export class CategoryService {
     }
 
     public async throwAvailableCategories(categoriesIDs: string[]) {
-        categoriesIDs.forEach(async (token) => {
+        categoriesIDs?.forEach(async (token) => {
             if ((await this._repository.findOne({ token })) == null)
                 throw new BadRequestError(
                     `This ${token} category is not registered in the database`,

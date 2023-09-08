@@ -98,7 +98,7 @@ describe('Unit - ProductController', () => {
 
         describe('register', () => {
             it('should register a product ', async () => {
-                const output = undefined;
+                const output = MockProductResource;
 
                 const spy = jest
                     .spyOn(controller, 'register')

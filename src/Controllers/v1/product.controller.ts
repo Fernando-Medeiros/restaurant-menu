@@ -63,12 +63,13 @@ export class ProductController {
 
     @Post()
     @ApiOperation({ summary: 'register a product' })
-    @ApiCreatedResponse({ description: 'success' })
+    @ApiCreatedResponse({ description: 'success', type: ProductResource })
     @ApiBadRequestResponse({ description: 'bad request' })
-    @ApiNotFoundResponse({ description: 'not found' })
     @HttpCode(201)
     async register(@Body() dto: ProductCreateDTO) {
-        await this._service.register(dto);
+        const product = await this._service.register(dto);
+
+        return new ProductResource(product);
     }
 
     @Patch(':token')

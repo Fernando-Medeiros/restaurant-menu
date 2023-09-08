@@ -34,8 +34,8 @@ export class ProductRepository {
         });
     }
 
-    async register(dto: ProductCreateDTO): Promise<void> {
-        await this._context.product.create({ data: dto });
+    async register(dto: ProductCreateDTO): Promise<ProductDTO> {
+        return this._context.product.create({ data: dto });
     }
 
     async update(token: string, dto: ProductUpdateDTO): Promise<void> {

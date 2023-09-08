@@ -53,8 +53,8 @@ export class CategoryRepository {
         });
     }
 
-    async register(dto: CategoryCreateDTO): Promise<void> {
-        await this._context.category.create({ data: dto });
+    async register(dto: CategoryCreateDTO): Promise<CategoryDTO> {
+        return this._context.category.create({ data: dto });
     }
 
     async update(token: string, dto: CategoryUpdateDTO): Promise<void> {

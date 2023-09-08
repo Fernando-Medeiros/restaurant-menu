@@ -34,10 +34,10 @@ export class CategoryService {
         return category;
     }
 
-    async register(dto: CategoryCreateDTO): Promise<void> {
+    async register(dto: CategoryCreateDTO): Promise<CategoryDTO> {
         await this.throwUniqueCategoryName({ ...dto });
 
-        await this._repository.register(dto);
+        return this._repository.register(dto);
     }
 
     async update(token: string, dto: CategoryUpdateDTO): Promise<void> {

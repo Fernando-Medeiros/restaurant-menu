@@ -112,7 +112,7 @@ describe('Unit - CategoryRepository', () => {
 
     describe('register', () => {
         it('should register a category', async () => {
-            const output = undefined;
+            const output = MockCategory;
 
             const spy = jest
                 .spyOn(repository, 'register')

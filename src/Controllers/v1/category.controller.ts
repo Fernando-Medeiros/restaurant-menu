@@ -83,12 +83,13 @@ export class CategoryController {
 
     @Post()
     @ApiOperation({ summary: 'register a category' })
-    @ApiCreatedResponse({ description: 'success' })
+    @ApiCreatedResponse({ description: 'success', type: CategoryResource })
     @ApiBadRequestResponse({ description: 'bad request' })
-    @ApiNotFoundResponse({ description: 'not found' })
     @HttpCode(201)
     async register(@Body() dto: CategoryCreateDTO) {
-        await this._service.register(dto);
+        const category = await this._service.register(dto);
+
+        return new CategoryResource(category);
     }
 
     @Patch(':token')

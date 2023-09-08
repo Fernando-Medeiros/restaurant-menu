@@ -31,12 +31,12 @@ export class ProductService {
         return product;
     }
 
-    async register(dto: ProductCreateDTO): Promise<void> {
+    async register(dto: ProductCreateDTO): Promise<ProductDTO> {
         await this.throwUniqueProductName({ ...dto });
 
         await this._categoryService.throwAvailableCategories(dto.categoriesIDs);
 
-        await this._repository.register(dto);
+        return this._repository.register(dto);
     }
 
     async update(token: string, dto: ProductUpdateDTO): Promise<void> {

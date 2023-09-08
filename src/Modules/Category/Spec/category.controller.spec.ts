@@ -134,7 +134,7 @@ describe('Unit - CategoryController', () => {
 
             describe('register', () => {
                 it('should register a category ', async () => {
-                    const output = undefined;
+                    const output = MockCategoryResource;
 
                     const spy = jest
                         .spyOn(controller, 'register')

@@ -28,7 +28,9 @@
                 "src/ModulesHelpers/*",
                 "dist/src/ModulesHelpers/*"
             ],
-            "mocks/*": ["test/mocks/*"]
+            "mocks/*": ["test/mocks/*"],
+            "fixtures/*": ["test/fixtures/*"],
+            "seeders/*": ["test/seeders/*"]
         }
     }
 }
